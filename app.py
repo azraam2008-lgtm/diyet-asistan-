@@ -139,6 +139,22 @@ st.markdown(
         border: 1px solid #3a506b;
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
+
+    /* Sidebar İçi Ortalanmış Profil Kutusu */
+    .sidebar-user-card {
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 15px;
+    }
+    .sidebar-user-name {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-style: italic;
+        font-size: 18px;
+        font-weight: 600;
+        color: #ffffff;
+        margin-top: 8px;
+        margin-bottom: 5px;
+    }
     </style>
 """,
     unsafe_allow_html=True,
@@ -396,22 +412,32 @@ else:
   # ----------------------------------------------------
   aktif_user = st.session_state.aktif_kullanici
 
-  if os.path.exists(AMBLEM_PATH):
-    st.sidebar.image(AMBLEM_PATH, use_container_width=True)
-
+  # Büyütülmüş ve Yaygın (Letter-Spacing Yüksek) Sol Menü N O V A Başlığı
   st.sidebar.markdown(
-      "<h2 style='letter-spacing: 6px; text-align: center;'>N O V A</h2>",
+      """
+      <h1 style="font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 38px; font-weight: 700; letter-spacing: 14px; text-align: center; color: #ffffff; margin-top: 10px; margin-bottom: 20px;">
+          N O V A
+      </h1>
+  """,
       unsafe_allow_html=True,
   )
 
-  c_side1, c_side2 = st.sidebar.columns([1, 3])
-  with c_side1:
+  # Ortalanmış Kuğu Amblemi ve Kullanıcı Adı
+  c_mid1, c_mid2, c_mid3 = st.sidebar.columns([1, 1.2, 1])
+  with c_mid2:
     if os.path.exists(AMBLEM_PATH):
-      st.image(AMBLEM_PATH, width=40)
-  with c_side2:
-    st.markdown(f"**{aktif_user.title()}**")
+      st.image(AMBLEM_PATH, use_container_width=True)
 
-  if st.sidebar.button("Çıkış Yap"):
+  st.sidebar.markdown(
+      f"""
+      <div class="sidebar-user-card">
+          <div class="sidebar-user-name">{aktif_user.title()}</div>
+      </div>
+  """,
+      unsafe_allow_html=True,
+  )
+
+  if st.sidebar.button("Çıkış Yap", use_container_width=True):
     st.session_state.giris_yapildi = False
     st.session_state.aktif_kullanici = ""
     st.rerun()
