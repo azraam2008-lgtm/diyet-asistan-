@@ -81,7 +81,7 @@ def verileri_yukle(username):
             "salatalik": {"kalori": 15, "protein": 0.7, "karb": 3.6, "yag": 0.1},
             "domates": {"kalori": 18, "protein": 0.9, "karb": 3.9, "yag": 0.2},
             "zeytinyagi": {"kalori": 884, "protein": 0.0, "karb": 0.0, "yag": 100.0},
-            "dilim peynir": {"kalori": 320, "protein": 22.0, "karb": 1.5, "yag": 25.0},
+            "dilim peynir": {"kalori": 320, "protein": 22.0, "karb": 25.0, "yag": 25.0},
             "tam bugday ekmegi": {"kalori": 247, "protein": 13.0, "karb": 41.0, "yag": 3.4},
             "labne": {"kalori": 210, "protein": 6.0, "karb": 4.0, "yag": 20.0},
             "sut": {"kalori": 50, "protein": 3.4, "karb": 4.8, "yag": 1.5},
@@ -147,26 +147,28 @@ if "aktif_kullanici" not in st.session_state:
     st.session_state.aktif_kullanici = ""
 
 if not st.session_state.giris_yapildi:
-    # 1/3 ve 2/3 oranında üst banner alanı (Amblem + Nova İlham Hikayesi)
-    col_banner1, col_banner2 = st.columns([1, 2], gap="large")
+    # Sol tarafta Amblem Görseli, Sağ tarafta Bütün Satırı Kaplayan Yayılmış N O V A ve Hikaye
+    col_banner1, col_banner2 = st.columns([1, 2.5], gap="large")
     
     with col_banner1:
         if os.path.exists(AMBLEM_PATH):
             st.image(AMBLEM_PATH, use_container_width=True)
         else:
-            st.markdown("### **NOVA**")
+            st.markdown("<h1 style='color: #ffffff; text-align: center;'>N O V A</h1>", unsafe_allow_html=True)
             
     with col_banner2:
         st.markdown("""
-            <div style="background-color: #1c2541; color: #ffffff; padding: 30px; border-radius: 14px; border: 1px solid #3a506b; box-shadow: 0 6px 25px rgba(0,0,0,0.6); height: 100%; display: flex; flex-direction: column; justify-content: center;">
-                <h1 style="margin-top: 0; color: #ffffff; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 42px; font-weight: 700; letter-spacing: 2px; text-align: center; margin-bottom: 20px;">NOVA</h1>
-                <p style="font-size: 16px; line-height: 1.8; color: #e0e1dd; margin-bottom: 0; font-family: 'Cinzel', sans-serif; text-align: justify; font-weight: 400;">
+            <div style="padding: 10px 0px; border-bottom: 1px solid #3a506b; width: 100%;">
+                <h1 style="color: #ffffff; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 52px; font-weight: 700; letter-spacing: 25px; text-align: center; margin-bottom: 25px; width: 100%;">
+                    N O V A
+                </h1>
+                <p style="font-size: 16px; line-height: 1.9; color: #ffffff; font-family: 'Cinzel', sans-serif; text-align: justify; font-weight: 400; margin: 0;">
                     Gökyüzünün derinliklerinde aniden parlayan bir yıldız gibidir dönüşüm... Karanlık suları aşan bir kuğunun asil zarafeti, pırlanta gibi parlayan yeni bir yaşam iradesiyle buluşur. Nova; kendi potansiyeline uyanmak, bedenine hak ettiği değeri vermek ve her gün biraz daha parlayarak kendi en büyüleyici versiyonunu baştan yaratmak isteyenlerin sığınağıdır. Işıltınla parlamaya hazır mısın?
                 </p>
             </div>
         """, unsafe_allow_html=True)
         
-    st.markdown("<br><hr style='border-color: #3a506b;'><br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
     
     tab_giris, tab_kayit = st.tabs(["Giriş Yap", "Yeni Hesap Oluştur"])
     users = kullanicilari_yukle()
@@ -221,7 +223,7 @@ else:
     if os.path.exists(AMBLEM_PATH):
         st.sidebar.image(AMBLEM_PATH, use_container_width=True)
     
-    st.sidebar.markdown(f"## ***NOVA***")
+    st.sidebar.markdown(f"<h2 style='letter-spacing: 6px; text-align: center;'>N O V A</h2>", unsafe_allow_html=True)
     
     # Özel Kullanıcı İçi Karşılama Alanı (Amblem Görselli)
     c_side1, c_side2 = st.sidebar.columns([1, 3])
@@ -406,7 +408,7 @@ else:
     # TARİF & MALZEME YÖNETİMİ
     # ----------------------------------------------------
     elif menu == "Tarif & Malzeme Yönetimi":
-        st.header("Tarif dan Malzeme Yönetim Paneli")
+        st.header("Tarif ve Malzeme Yönetim Paneli")
         
         tab1, tab2 = st.tabs(["1. Yeni Malzeme Ekle", "2. Gramaj Esaslı Yeni Tarif Oluştur"])
         
