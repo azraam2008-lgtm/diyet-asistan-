@@ -148,27 +148,4 @@ elif secim == "Haftalık Program & Değerlendirme":
     else:
         st.info("Geçmiş verilere ulaşmak için günlük kayıt eklemelisiniz.")
 
-# ----------------------------------------------------
-# 3. AKTİVİTE & PİLATES
-# ----------------------------------------------------
-elif secim == "Aktivite & Pilates":
-    st.header("Aktivite ve Egzersiz Yönetimi")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.subheader("Pilates")
-        pilates_tur = st.selectbox("Pilates Türü", ["Mat Pilates", "Reformer Pilates", "Klinik / Yoğun Pilates"])
-        pilates_sure = st.number_input("Süre (Dakika)", min_value=10, value=45, step=5)
-        
-        # Ortalama MET değerleri
-        met_map = {"Mat Pilates": 3.0, "Reformer Pilates": 4.0, "Klinik / Yoğun Pilates": 5.0}
-        yakilan_p = (met_map[pilates_tur] * 60 * (pilates_sure / 60))  # Yaklaşık 60 kg baz alınarak standart hesap
-        st.info(f"Tahmini Harcanan Kalori: **{yakilan_p:.0f} kcal**")
-
-    with col2:
-        st.subheader("Yürüyüş")
-        yuruyus_tur = st.selectbox("Yürüyüş Temposu", ["Hafif Tempo (4 km/s)", "Orta Tempo (5 km/s)", "Hızlı / Eğimli (6.5 km/s)"])
-        yuruyus_sure = st.number_input("Yürüyüş Süresi (Dakika)", min_value=10, value=30, step=5)
-        
-        met_y_map = {"Hafif
+# ------------------------------------------------
