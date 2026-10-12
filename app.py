@@ -46,6 +46,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 USERS_FILE = "kullanicilar.json"
+AMBLEM_PATH = "watermarked_img_10875607693201107735.jpg"
 
 # ----------------------------------------------------
 # KULLANICI YÖNETİMİ & ŞİFRELEME FONKSİYONLARI
@@ -146,21 +147,21 @@ if "aktif_kullanici" not in st.session_state:
     st.session_state.aktif_kullanici = ""
 
 if not st.session_state.giris_yapildi:
-    # 1/3 ve 2/3 oranında üst banner alanı (Amblem + Nova Anlamı)
+    # 1/3 ve 2/3 oranında üst banner alanı (Amblem + Nova İlham Hikayesi)
     col_banner1, col_banner2 = st.columns([1, 2], gap="large")
     
     with col_banner1:
-        if os.path.exists("watermarked_img_9319056157262101615.jpg"):
-            st.image("watermarked_img_9319056157262101615.jpg", use_container_width=True)
+        if os.path.exists(AMBLEM_PATH):
+            st.image(AMBLEM_PATH, use_container_width=True)
         else:
             st.markdown("### 🦢 **NOVA**")
             
     with col_banner2:
         st.markdown("""
-            <div style="background-color: #ffffff; color: #0b132b; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); height: 100%; display: flex; flex-direction: column; justify-content: center;">
-                <h2 style="margin-top: 0; color: #1c2541; font-family: serif; letter-spacing: 1px;">✨ NOVA</h2>
-                <p style="font-size: 15px; line-height: 1.6; margin-bottom: 0; font-weight: 500;">
-                    <b>Nova:</b> Gök biliminde aniden parlayan yepyeni bir yıldızı ifade eder. Bu uygulamada ise; kuğu zarafetiyle alışkanlıklarını dönüştürdüğün, standartlarını yukarı taşıdığın ve içindeki potansiyelin göz alıcı bir şekilde parladığı yepyeni bir başlangıcı simgeler.
+            <div style="background-color: #ffffff; color: #0b132b; padding: 30px; border-radius: 14px; box-shadow: 0 6px 25px rgba(0,0,0,0.6); height: 100%; display: flex; flex-direction: column; justify- content: center;">
+                <h1 style="margin-top: 0; color: #0b132b; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 42px; font-weight: 700; letter-spacing: 2px; text-align: center;">NOVA</h1>
+                <p style="font-size: 16px; line-height: 1.8; color: #1c2541; margin-bottom: 0; font-family: 'Cinzel', sans-serif; text-align: justify; font-weight: 500;">
+                    Gökyüzünün derinliklerinde aniden parlayan bir yıldız gibidir dönüşüm... Karanlık suları aşan bir kuğunun asil zarafeti, pırlanta gibi parlayan yeni bir yaşam iradesiyle buluşur. Nova; kendi potansiyeline uyanmak, bedenine hak ettiği değeri vermek ve her gün biraz daha parlayarak kendi en büyüleyici versiyonunu baştan yaratmak isteyenlerin sığınağıdır. Işıltınla parlamaya hazır mısın?
                 </p>
             </div>
         """, unsafe_allow_html=True)
@@ -216,13 +217,21 @@ else:
     # ----------------------------------------------------
     aktif_user = st.session_state.aktif_kullanici
     
-    # Sol Menü Tasarımı
-    if os.path.exists("watermarked_img_9319056157262101615.jpg"):
-        st.sidebar.image("watermarked_img_9319056157262101615.jpg", use_container_width=True)
+    # Sol Menü Tasarımı (Kuğu Amblemi ile)
+    if os.path.exists(AMBLEM_PATH):
+        st.sidebar.image(AMBLEM_PATH, use_container_width=True)
     
-    st.sidebar.markdown(f"### ✨ **NOVA**")
-    st.sidebar.markdown(f"Aktif Kullanıcı: **{aktif_user.title()}**")
+    # Sidebar Karşılama ve Kullanıcı Bilgisi
+    st.sidebar.markdown(f"## ***NOVA***")
     
+    # Özel Kullanıcı İçi Karşılama Alanı (Amblem Görselli)
+    c_side1, c_side2 = st.sidebar.columns([1, 3])
+    with c_side1:
+        if os.path.exists(AMBLEM_PATH):
+            st.image(AMBLEM_PATH, width=40)
+    with c_side2:
+        st.markdown(f"**{aktif_user.title()}**")
+        
     if st.sidebar.button("Çıkış Yap"):
         st.session_state.giris_yapildi = False
         st.session_state.aktif_kullanici = ""
@@ -244,7 +253,13 @@ else:
     # GÜNLÜK TAKİP PANELİ
     # ----------------------------------------------------
     if menu == "Günlük Takip Paneli":
-        st.header(f"Günlük Beslenme ve Aktivite — {aktif_user.title()}")
+        # Amblemli Üst Başlık
+        c_title1, c_title2 = st.columns([1, 15])
+        with c_title1:
+            if os.path.exists(AMBLEM_PATH):
+                st.image(AMBLEM_PATH, width=50)
+        with c_title2:
+            st.header(f"Günlük Beslenme ve Aktivite — {aktif_user.title()}")
         
         secilen_tarih = str(st.date_input("Kayıt Tarihi", datetime.date.today()))
         
