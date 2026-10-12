@@ -246,7 +246,7 @@ elif menu == "Haftalık Program & Değerlendirme":
         st.info("Değerlendirme yapabilmek için günlük kayıtlar eklemelisiniz.")
 
 # ----------------------------------------------------
-# 3. TARİF & MALZEME YÖNETİMİ (Kendi Kendine Ekleme Özelliği)
+# 3. TARİF & MALZEME YÖNETİMİ
 # ----------------------------------------------------
 elif menu == "Tarif & Malzeme Yönetimi":
     st.header("Tarif ve Malzeme Yönetim Paneli")
@@ -284,7 +284,6 @@ elif menu == "Tarif & Malzeme Yönetimi":
         st.subheader("Gramaj Esaslı Yeni Tarif / Yemek Oluştur")
         t_ad = st.text_input("Tarif / Yemek Adı (Örn: Omlet, Yulaf Lapası, Özel Salata vb.)")
         
-        # Kullanıcının malzemeleri tek tek seçip gramaj girmesi için dinamik alan
         secilen_malzemeler = st.multiselect("Tarifte Kullanılacak Malzemeleri Seç", list(st.session_state.besin_veritabani.keys()))
         
         tarif_gramajlari = {}
@@ -309,7 +308,7 @@ elif menu == "Tarif & Malzeme Yönetimi":
             st.write(f"🔹 **{tarif_adi}**: {detay_str}")
 
 # ----------------------------------------------------
-# 4. HEDEF & KİLO ANALİZ SİHİRBAZI (Mevcut vs Hedef Kilo + Kalori Açığı & Süre)
+# 4. HEDEF & KİLO ANALİZ SİHİRBAZI
 # ----------------------------------------------------
 elif menu == "Hedef & Kilo Analiz Sihirbazı":
     st.header("Kişiselleştirilmiş Hedef, Kilo ve Kalori Açığı Sihirbazı")
@@ -328,7 +327,6 @@ elif menu == "Hedef & Kilo Analiz Sihirbazı":
     aktivite = st.selectbox("Aktivite Düzeyi", ["Hareketsiz / Masa Başı", "Hafif Aktif (Haftada 1-3 gün)", "Orta Aktif (Haftada 3-5 gün)", "Çok Aktif"])
 
     if st.button("Hedeflerimi ve Süreyi Hesapla"):
-        # BMR Hesaplama (Mifflin-St Jeor)
         if cinsiyet == "Kadın":
             bmr = (10 * mevcut_kilo) + (6.25 * boy) - (5 * yas) - 161
         else:
@@ -342,7 +340,7 @@ elif menu == "Hedef & Kilo Analiz Sihirbazı":
         }
         
         tdee = bmr * carpanlar[aktivite]
-        kilo_farki = mevcut_kilo - hedef_kilo  # Pozitifse kilo verme, negatifse kilo alma hedefi
+        kilo_farki = mevcut_kilo - hedef_kilo
         
         st.session_state.profil["cinsiyet"] = cinsiyet
         st.session_state.profil["yas"] = yas
@@ -351,12 +349,11 @@ elif menu == "Hedef & Kilo Analiz Sihirbazı":
         st.session_state.profil["hedef_kilo"] = hedef_kilo
         
         if kilo_farki > 0:
-            # Kilo verme hedefi (Sağlıklı haftalık kilo kaybı: ~0.5 kg için günlük 500 kcal açık)
             hedef_kalori = tdee - 500
             st.session_state.profil["hedef_kalori"] = round(hedef_kalori)
             
-            toplam_yakilacak_ yag_kcal = kilo_farki * 7700
-            tahmini_gun = toplam_yakilacak_ yag_kcal / 500
+            toplam_yakilacak_yag_kcal = kilo_farki * 7700
+            tahmini_gun = toplam_yakilacak_yag_kcal / 500
             tahmini_hafta = tahmini_gun / 7
             
             st.success("Hedefleriniz başarıyla hesaplandı ve kaydedildi!")
@@ -371,7 +368,6 @@ elif menu == "Hedef & Kilo Analiz Sihirbazı":
             st.markdown(f"⏱️ **Tahmini Süre:** Haftada ortalama 0.5 kg vererek bu hedefe **yaklaşık {tahmini_hafta:.1f} haftada (yaklaşık {round(tahmini_gun)} günde)** ulaşabilirsiniz.")
             
         elif kilo_farki < 0:
-            # Kilo alma hedefi
             hedef_kalori = tdee + 300
             st.session_state.profil["hedef_kalori"] = round(hedef_kalori)
             
