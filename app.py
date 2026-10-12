@@ -5,12 +5,50 @@ import json
 import os
 import hashlib
 
-st.set_page_config(page_title="Diyet ve Aktivite Asistanı", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Nova — Diyet ve Aktivite Asistanı", layout="wide", initial_sidebar_state="expanded")
+
+# ----------------------------------------------------
+# ESTETİK ÖZEL CSS (Lacivert ve Lüks Swarovski / Nova Teması)
+# ----------------------------------------------------
+st.markdown("""
+    <style>
+    /* Ana Arkaplan ve Metin Renkleri */
+    .stApp {
+        background-color: #0b132b;
+        color: #e0e1dd;
+    }
+    /* Sidebar (Yan Menü) Tasarımı */
+    [data-testid="stSidebar"] {
+        background-color: #1c2541;
+        color: #e0e1dd;
+    }
+    /* Butonlar */
+    .stButton > button {
+        background-color: #3a506b;
+        color: #ffffff;
+        border: 1px solid #48cae4;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+    .stButton > button:hover {
+        background-color: #48cae4;
+        color: #0b132b;
+    }
+    /* Metin Girişleri ve Seçim Kutuları */
+    .stTextInput > div > div > input, .stSelectbox > div > div > div {
+        background-color: #1c2541;
+        color: #ffffff;
+        border-radius: 6px;
+        border: 1px solid #3a506b;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 USERS_FILE = "kullanicilar.json"
 
 # ----------------------------------------------------
-# 0. KULLANICI YÖNETİMİ & ŞİFRELEME FONKSİYONLARI
+# KULLANICI YÖNETİMİ & ŞİFRELEME FONKSİYONLARI
 # ----------------------------------------------------
 def sifre_hashle(sifre):
     return hashlib.sha256(sifre.encode("utf-8")).hexdigest()
@@ -100,7 +138,7 @@ def verileri_kaydet(username):
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 # ----------------------------------------------------
-# 1. OTURUM KONTROLÜ VE GİRİŞ / KAYIT EKRANI
+# 1. OTURUM KONTROLÜ VE GİRİŞ / KAYIT EKRANI (LANDING PAGE)
 # ----------------------------------------------------
 if "giris_yapildi" not in st.session_state:
     st.session_state.giris_yapildi = False
@@ -108,23 +146,40 @@ if "aktif_kullanici" not in st.session_state:
     st.session_state.aktif_kullanici = ""
 
 if not st.session_state.giris_yapildi:
-    st.title("Diyet ve Aktivite Takip Portalı")
-    st.subheader("Hoş Geldiniz! Lütfen Giriş Yapın veya Yeni Hesap Oluşturun")
+    # 1/3 ve 2/3 oranında üst banner alanı (Amblem + Nova Anlamı)
+    col_banner1, col_banner2 = st.columns([1, 2], gap="large")
+    
+    with col_banner1:
+        if os.path.exists("watermarked_img_9319056157262101615.jpg"):
+            st.image("watermarked_img_9319056157262101615.jpg", use_container_width=True)
+        else:
+            st.markdown("### 🦢 **NOVA**")
+            
+    with col_banner2:
+        st.markdown("""
+            <div style="background-color: #ffffff; color: #0b132b; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                <h2 style="margin-top: 0; color: #1c2541; font-family: serif; letter-spacing: 1px;">✨ NOVA</h2>
+                <p style="font-size: 15px; line-height: 1.6; margin-bottom: 0; font-weight: 500;">
+                    <b>Nova:</b> Gök biliminde aniden parlayan yepyeni bir yıldızı ifade eder. Bu uygulamada ise; kuğu zarafetiyle alışkanlıklarını dönüştürdüğün, standartlarını yukarı taşıdığın ve içindeki potansiyelin göz alıcı bir şekilde parladığı yepyeni bir başlangıcı simgeler.
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+    st.markdown("<br><hr style='border-color: #3a506b;'><br>", unsafe_allow_html=True)
     
     tab_giris, tab_kayit = st.tabs(["Giriş Yap", "Yeni Hesap Oluştur"])
-    
     users = kullanicilari_yukle()
     
     with tab_giris:
+        st.subheader("Hesabınıza Giriş Yapın")
         g_user = st.text_input("Kullanıcı Adı", key="g_user").strip().lower()
         g_pass = st.text_input("Şifre", type="password", key="g_pass")
         
-        if st.button("Giriş Yap"):
+        if st.button("Giriş Yap", key="btn_giris"):
             if g_user in users and users[g_user] == sifre_hashle(g_pass):
                 st.session_state.giris_yapildi = True
                 st.session_state.aktif_kullanici = g_user
                 
-                # Kullanıcı verilerini oturuma yükle
                 u_data = verileri_yukle(g_user)
                 st.session_state.besin_veritabani = u_data["besin_veritabani"]
                 st.session_state.hazir_tarifler = u_data["hazir_tarifler"]
@@ -132,17 +187,18 @@ if not st.session_state.giris_yapildi:
                 st.session_state.aktivite_loglari = u_data["aktivite_loglari"]
                 st.session_state.profil = u_data["profil"]
                 
-                st.success(f"Hoş geldiniz, {g_user.title()}!")
+                st.success(f"Hoş geldin, {g_user.title()}!")
                 st.rerun()
             else:
                 st.error("Kullanıcı adı veya şifre hatalı!")
                 
     with tab_kayit:
+        st.subheader("Yeni Nova Hesabı Oluştur")
         k_user = st.text_input("Yeni Kullanıcı Adı", key="k_user").strip().lower()
         k_pass = st.text_input("Şifre Oluştur", type="password", key="k_pass")
         k_pass_repeat = st.text_input("Şifreyi Tekrar Girin", type="password", key="k_pass_rep")
         
-        if st.button("Kayıt Ol"):
+        if st.button("Kayıt Ol", key="btn_kayit"):
             if not k_user or not k_pass:
                 st.warning("Lütfen kullanıcı adı ve şifre belirleyin.")
             elif k_pass != k_pass_repeat:
@@ -160,8 +216,13 @@ else:
     # ----------------------------------------------------
     aktif_user = st.session_state.aktif_kullanici
     
-    # Sol Menü Üst Kısmı (Kullanıcı Bilgisi & Çıkış Yap)
-    st.sidebar.markdown(f"**Aktif Kullanıcı:** `{aktif_user.title()}`")
+    # Sol Menü Tasarımı
+    if os.path.exists("watermarked_img_9319056157262101615.jpg"):
+        st.sidebar.image("watermarked_img_9319056157262101615.jpg", use_container_width=True)
+    
+    st.sidebar.markdown(f"### ✨ **NOVA**")
+    st.sidebar.markdown(f"Aktif Kullanıcı: **{aktif_user.title()}**")
+    
     if st.sidebar.button("Çıkış Yap"):
         st.session_state.giris_yapildi = False
         st.session_state.aktif_kullanici = ""
@@ -169,10 +230,8 @@ else:
         
     st.sidebar.divider()
     
-    st.title(f"Diyet ve Aktivite Asistanı — {aktif_user.title()}")
-    
     menu = st.sidebar.selectbox(
-        "Menü", 
+        "Navigasyon Menüsü", 
         [
             "Günlük Takip Paneli", 
             "Haftalık Program & Değerlendirme", 
@@ -185,7 +244,7 @@ else:
     # GÜNLÜK TAKİP PANELİ
     # ----------------------------------------------------
     if menu == "Günlük Takip Paneli":
-        st.header("Günlük Beslenme ve Aktivite Takip Paneli")
+        st.header(f"Günlük Beslenme ve Aktivite — {aktif_user.title()}")
         
         secilen_tarih = str(st.date_input("Kayıt Tarihi", datetime.date.today()))
         
