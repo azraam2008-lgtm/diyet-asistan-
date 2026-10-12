@@ -154,13 +154,13 @@ if not st.session_state.giris_yapildi:
         if os.path.exists(AMBLEM_PATH):
             st.image(AMBLEM_PATH, use_container_width=True)
         else:
-            st.markdown("### 🦢 **NOVA**")
+            st.markdown("### **NOVA**")
             
     with col_banner2:
         st.markdown("""
-            <div style="background-color: #ffffff; color: #0b132b; padding: 30px; border-radius: 14px; box-shadow: 0 6px 25px rgba(0,0,0,0.6); height: 100%; display: flex; flex-direction: column; justify- content: center;">
-                <h1 style="margin-top: 0; color: #0b132b; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 42px; font-weight: 700; letter-spacing: 2px; text-align: center;">NOVA</h1>
-                <p style="font-size: 16px; line-height: 1.8; color: #1c2541; margin-bottom: 0; font-family: 'Cinzel', sans-serif; text-align: justify; font-weight: 500;">
+            <div style="background-color: #1c2541; color: #ffffff; padding: 30px; border-radius: 14px; border: 1px solid #3a506b; box-shadow: 0 6px 25px rgba(0,0,0,0.6); height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                <h1 style="margin-top: 0; color: #ffffff; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 42px; font-weight: 700; letter-spacing: 2px; text-align: center; margin-bottom: 20px;">NOVA</h1>
+                <p style="font-size: 16px; line-height: 1.8; color: #e0e1dd; margin-bottom: 0; font-family: 'Cinzel', sans-serif; text-align: justify; font-weight: 400;">
                     Gökyüzünün derinliklerinde aniden parlayan bir yıldız gibidir dönüşüm... Karanlık suları aşan bir kuğunun asil zarafeti, pırlanta gibi parlayan yeni bir yaşam iradesiyle buluşur. Nova; kendi potansiyeline uyanmak, bedenine hak ettiği değeri vermek ve her gün biraz daha parlayarak kendi en büyüleyici versiyonunu baştan yaratmak isteyenlerin sığınağıdır. Işıltınla parlamaya hazır mısın?
                 </p>
             </div>
@@ -221,7 +221,6 @@ else:
     if os.path.exists(AMBLEM_PATH):
         st.sidebar.image(AMBLEM_PATH, use_container_width=True)
     
-    # Sidebar Karşılama ve Kullanıcı Bilgisi
     st.sidebar.markdown(f"## ***NOVA***")
     
     # Özel Kullanıcı İçi Karşılama Alanı (Amblem Görselli)
@@ -407,7 +406,7 @@ else:
     # TARİF & MALZEME YÖNETİMİ
     # ----------------------------------------------------
     elif menu == "Tarif & Malzeme Yönetimi":
-        st.header("Tarif ve Malzeme Yönetim Paneli")
+        st.header("Tarif dan Malzeme Yönetim Paneli")
         
         tab1, tab2 = st.tabs(["1. Yeni Malzeme Ekle", "2. Gramaj Esaslı Yeni Tarif Oluştur"])
         
