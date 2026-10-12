@@ -147,19 +147,22 @@ if "aktif_kullanici" not in st.session_state:
     st.session_state.aktif_kullanici = ""
 
 if not st.session_state.giris_yapildi:
-    # Üst Kısım: Kristal Kuğu Amblemi Ortalanmış
-    col_img1, col_img2, col_img3 = st.columns([2.5, 1, 2.5])
+    # Daha kibar ve küçültülmüş amblem alanı
+    col_img1, col_img2, col_img3 = st.columns([3.2, 0.9, 3.2])
     with col_img2:
         if os.path.exists(AMBLEM_PATH):
             st.image(AMBLEM_PATH, use_container_width=True)
             
-    # Kutucusuz, Daha Küçük, Akıcı ve Hafif Silik Estetik Tasarım
+    # Instagram stilinde elegant tipografi ve tam paragraf genişliğinde N-O-V-A hizalaması
     st.markdown("""
-        <div style="padding: 10px 20px; margin-top: 10px; margin-bottom: 25px; text-align: center;">
-            <h1 style="color: #ffffff; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 44px; font-weight: 700; letter-spacing: 28px; text-align: center; margin-bottom: 15px; width: 100%;">
-                N O V A
-            </h1>
-            <p style="font-size: 14px; line-height: 1.7; color: #a0aab8; font-family: 'Cinzel', sans-serif; text-align: center; font-weight: 300; margin: 0 auto; max-width: 850px;">
+        <div style="max-width: 720px; margin: 0 auto; padding: 5px 15px; margin-bottom: 25px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 34px; font-weight: 700; color: #ffffff; margin-bottom: 8px; padding: 0 4px;">
+                <span>N</span>
+                <span>O</span>
+                <span>V</span>
+                <span>A</span>
+            </div>
+            <p style="font-size: 13px; line-height: 1.7; color: #9da8b5; font-family: 'Playfair Display', Georgia, serif; font-style: italic; text-align: justify; font-weight: 400; margin: 0;">
                 Gökyüzünün derinliklerinde aniden parlayan bir yıldız gibidir dönüşüm... Karanlık suları aşan bir kuğunun asil zarafeti, pırlanta gibi parlayan yeni bir yaşam iradesiyle buluşur. Nova; kendi potansiyeline uyanmak, bedenine hak ettiği değeri vermek ve her gün biraz daha parlayarak kendi en büyüleyici versiyonunu baştan yaratmak isteyenlerin sığınağıdır. Işıltınla parlamaya hazır mısın?
             </p>
         </div>
