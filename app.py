@@ -147,23 +147,23 @@ if "aktif_kullanici" not in st.session_state:
     st.session_state.aktif_kullanici = ""
 
 if not st.session_state.giris_yapildi:
-    col_banner1, col_banner2 = st.columns([1, 3.5], gap="large")
-    
-    with col_banner1:
+    # Üst Kısım: Kristal Kuğu Amblemi Ortalanmış
+    col_img1, col_img2, col_img3 = st.columns([2.5, 1, 2.5])
+    with col_img2:
         if os.path.exists(AMBLEM_PATH):
             st.image(AMBLEM_PATH, use_container_width=True)
             
-    with col_banner2:
-        st.markdown("""
-            <div style="padding: 10px 0px; border-bottom: 1px solid #3a506b; width: 100%; display: flex; flex-direction: column; justify-content: center; height: 100%;">
-                <h1 style="color: #ffffff; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 50px; font-weight: 700; letter-spacing: 28px; text-align: center; margin-bottom: 20px; width: 100%;">
-                    N O V A
-                </h1>
-                <p style="font-size: 16.5px; line-height: 1.9; color: #ffffff; font-family: 'Cinzel', sans-serif; text-align: center; font-weight: 400; margin: 0; padding: 0 10px;">
-                    Gökyüzünün derinliklerinde aniden parlayan bir yıldız gibidir dönüşüm... Karanlık suları aşan bir kuğunun asil zarafeti, pırlanta gibi parlayan yeni bir yaşam iradesiyle buluşur. Nova; kendi potansiyeline uyanmak, bedenine hak ettiği değeri vermek ve her gün biraz daha parlayarak kendi en büyüleyici versiyonunu baştan yaratmak isteyenlerin sığınağıdır. Işıltınla parlamaya hazır mısın?
-                </p>
-            </div>
-        """, unsafe_allow_html=True)
+    # Tam Genişliğe Yayılmış Akıcı Nova Banner Alanı
+    st.markdown("""
+        <div style="background-color: #1c2541; padding: 35px 50px; border-radius: 14px; border: 1px solid #3a506b; box-shadow: 0 6px 25px rgba(0,0,0,0.6); margin-top: 15px; margin-bottom: 25px; text-align: center;">
+            <h1 style="color: #ffffff; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 56px; font-weight: 700; letter-spacing: 35px; text-align: center; margin-bottom: 25px; width: 100%;">
+                N O V A
+            </h1>
+            <p style="font-size: 17px; line-height: 1.8; color: #ffffff; font-family: 'Cinzel', sans-serif; text-align: center; font-weight: 400; margin: 0 auto; max-width: 1100px;">
+                Gökyüzünün derinliklerinde aniden parlayan bir yıldız gibidir dönüşüm... Karanlık suları aşan bir kuğunun asil zarafeti, pırlanta gibi parlayan yeni bir yaşam iradesiyle buluşur. Nova; kendi potansiyeline uyanmak, bedenine hak ettiği değeri vermek ve her gün biraz daha parlayarak kendi en büyüleyici versiyonunu baştan yaratmak isteyenlerin sığınağıdır. Işıltınla parlamaya hazır mısın?
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
         
     st.markdown("<br>", unsafe_allow_html=True)
     
