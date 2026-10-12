@@ -44,7 +44,7 @@ def verileri_yukle():
         "gunluk_kayitlar": [],
         "aktivite_loglari": {},
         "profil": {
-            "cinsiyet": "Kadın", "yas": 20, "boy": 165, "kilo": 58.0, 
+            "cinsiyet": "Kadın", "yas": 20, "boy": 165, "mevcut_kilo": 58.0, "hedef_kilo": 55.0, 
             "hedef_kalori": 1800, "hedef_protein": 90, "hedef_karb": 200, "hedef_yag": 60
         }
     }
@@ -52,7 +52,12 @@ def verileri_yukle():
     if os.path.exists(DATA_FILE):
         try:
             with open(DATA_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
+                data = json.load(f)
+                if "hedef_kilo" not in data.get("profil", {}):
+                    data["profil"]["hedef_kilo"] = 55.0
+                if "mevcut_kilo" not in data.get("profil", {}) and "kilo" in data.get("profil", {}):
+                    data["profil"]["mevcut_kilo"] = data["profil"]["kilo"]
+                return data
         except:
             return default_data
     return default_data
@@ -80,15 +85,15 @@ if "aktivite_loglari" not in st.session_state:
 if "profil" not in st.session_state:
     st.session_state.profil = loaded_data["profil"]
 
-st.title("Diyet ve Aktivite Takip Asistanı")
+st.title("Diyet ve Aktivite Asistanı")
 
 menu = st.sidebar.selectbox(
     "Menü", 
     [
         "Günlük Takip Paneli", 
         "Haftalık Program & Değerlendirme", 
-        "Tarif ve Malzeme Yönetimi", 
-        "Makro & Hedef Sihirbazı"
+        "Tarif & Malzeme Yönetimi", 
+        "Hedef & Kilo Analiz Sihirbazı"
     ]
 )
 
@@ -169,7 +174,7 @@ if menu == "Günlük Takip Paneli":
     st.markdown("---")
     st.subheader("Günlük Genel Denge ve Özet")
     
-    kilo_val = st.session_state.profil["kilo"]
+    kilo_val = st.session_state.profil["mevcut_kilo"]
     boy_val = st.session_state.profil["boy"]
     yas_val = st.session_state.profil["yas"]
     cins_val = st.session_state.profil["cinsiyet"]
@@ -241,64 +246,73 @@ elif menu == "Haftalık Program & Değerlendirme":
         st.info("Değerlendirme yapabilmek için günlük kayıtlar eklemelisiniz.")
 
 # ----------------------------------------------------
-# 3. TARİF VE MALZEME YÖNETİMİ
+# 3. TARİF & MALZEME YÖNETİMİ (Kendi Kendine Ekleme Özelliği)
 # ----------------------------------------------------
 elif menu == "Tarif & Malzeme Yönetimi":
     st.header("Tarif ve Malzeme Yönetim Paneli")
     
-    tab1, tab2 = st.tabs(["Mevcut Malzemeler & Yeni Malzeme Ekle", "Gramajlı Yeni Tarif Oluştur"])
+    tab1, tab2 = st.tabs(["1. Yeni Malzeme Ekle", "2. Gramaj Esaslı Yeni Tarif Oluştur"])
     
     with tab1:
-        st.subheader("Mevcut Malzeme Veritabanı")
-        df_malzeme = pd.DataFrame([
-            {"Malzeme": k, "Kalori (100g)": v["kalori"], "Protein (g)": v["protein"], "Karb (g)": v["karb"], "Yağ (g)": v["yag"]}
-            for k, v in st.session_state.besin_veritabani.items()
-        ])
-        st.dataframe(df_malzeme, use_container_width=True)
+        st.subheader("Veritabanına Yeni Malzeme Tanımla (100g / ml Başına)")
+        m_ad = st.text_input("Malzeme Adı (Örn: Lor Peyniri, Yulaf vb.)")
+        m_kal = st.number_input("100 gramdaki Kalori (kcal)", min_value=0.0, value=100.0, step=5.0)
+        m_pro = st.number_input("100 gramdaki Protein (g)", min_value=0.0, value=10.0, step=1.0)
+        m_kar = st.number_input("100 gramdaki Karbonhidrat (g)", min_value=0.0, value=5.0, step=1.0)
+        m_yag = st.number_input("100 gramdaki Yağ (g)", min_value=0.0, value=3.0, step=1.0)
         
-        st.markdown("---")
-        st.subheader("Yeni Malzeme Ekle")
-        m_ad = st.text_input("Malzeme Adı (Örn: Lor Peyniri)")
-        m_kal = st.number_input("100 gramdaki Kalori (kcal)", min_value=0.0, value=100.0)
-        m_pro = st.number_input("100 gramdaki Protein (g)", min_value=0.0, value=10.0)
-        m_kar = st.number_input("100 gramdaki Karbonhidrat (g)", min_value=0.0, value=5.0)
-        m_yag = st.number_input("100 gramdaki Yağ (g)", min_value=0.0, value=3.0)
-        
-        if st.button("Yeni Malzemeyi Kaydet"):
+        if st.button("Malzemeyi Veritabanına Kaydet"):
             if m_ad.strip():
                 temiz_ad = m_ad.strip().lower()
                 st.session_state.besin_veritabani[temiz_ad] = {
                     "kalori": m_kal, "protein": m_pro, "karb": m_kar, "yag": m_yag
                 }
                 verileri_kaydet()
-                st.success(f"'{m_ad}' başarıyla veritabanına eklendi.")
+                st.success(f"'{m_ad}' başarıyla veritabanına eklendi! Artık tariflerde kullanabilirsin.")
             else:
                 st.warning("Lütfen geçerli bir malzeme adı girin.")
+                
+        st.markdown("---")
+        st.subheader("Mevcut Malzeme Listesi")
+        df_malzeme = pd.DataFrame([
+            {"Malzeme Adı": k, "Kalori (100g)": v["kalori"], "Protein (g)": v["protein"], "Karb (g)": v["karb"], "Yağ (g)": v["yag"]}
+            for k, v in st.session_state.besin_veritabani.items()
+        ])
+        st.dataframe(df_malzeme, use_container_width=True)
 
     with tab2:
-        st.subheader("Gramaj Esaslı Yeni Tarif Oluştur")
-        t_ad = st.text_input("Tarif / Yemek Adı (Örn: Özel Karışım Salata)")
+        st.subheader("Gramaj Esaslı Yeni Tarif / Yemek Oluştur")
+        t_ad = st.text_input("Tarif / Yemek Adı (Örn: Omlet, Yulaf Lapası, Özel Salata vb.)")
         
-        secilen_malzemeler = st.multiselect("Kullanılacak Malzemeler", list(st.session_state.besin_veritabani.keys()))
+        # Kullanıcının malzemeleri tek tek seçip gramaj girmesi için dinamik alan
+        secilen_malzemeler = st.multiselect("Tarifte Kullanılacak Malzemeleri Seç", list(st.session_state.besin_veritabani.keys()))
+        
         tarif_gramajlari = {}
-        
-        for m in secilen_malzemeler:
-            gr = st.number_input(f"{m} miktarı (Gram / ml)", min_value=1.0, value=100.0, step=5.0, key=f"tarif_gr_{m}")
-            tarif_gramajlari[m] = gr
-            
-        if st.button("Tarifi Kütüphaneye Kaydet"):
+        if secilen_malzemeler:
+            st.markdown("**Seçilen Malzemelerin Miktarları (Gram / ml):**")
+            for m in secilen_malzemeler:
+                gr = st.number_input(f"{m.title()} kaç gram/ml?", min_value=1.0, value=100.0, step=5.0, key=f"gram_{m}")
+                tarif_gramajlari[m] = gr
+                
+        if st.button("Bu Tarifi Kütüphaneye Kaydet"):
             if t_ad.strip() and tarif_gramajlari:
                 st.session_state.hazir_tarifler[t_ad.strip()] = tarif_gramajlari
                 verileri_kaydet()
-                st.success(f"'{t_ad}' tarifi başarıyla kaydedildi.")
+                st.success(f"'{t_ad}' tarifi başarıyla kaydedildi! Artık günlük öğün eklerken seçebilirsin.")
             else:
-                st.warning("Lütfen tarif adı yazın ve en az bir malzeme seçin.")
+                st.warning("Lütfen tarif adı yazın ve en az bir malzeme seçip gramaj belirleyin.")
+                
+        st.markdown("---")
+        st.subheader("Kayıtlı Tarifler ve İçerdikleri Malzemeler")
+        for tarif_adi, icerik in st.session_state.hazir_tarifler.items():
+            detay_str = ", ".join([f"{gr}g {malzeme}" for malzeme, gr in icerik.items()])
+            st.write(f"🔹 **{tarif_adi}**: {detay_str}")
 
 # ----------------------------------------------------
-# 4. MAKRO & HEDEF SİHİRBAZI
+# 4. HEDEF & KİLO ANALİZ SİHİRBAZI (Mevcut vs Hedef Kilo + Kalori Açığı & Süre)
 # ----------------------------------------------------
-elif menu == "Makro & Hedef Sihirbazı":
-    st.header("Kişiselleştirilmiş Hedef ve Makro Hesaplama Sihirbazı")
+elif menu == "Hedef & Kilo Analiz Sihirbazı":
+    st.header("Kişiselleştirilmiş Hedef, Kilo ve Kalori Açığı Sihirbazı")
     
     p = st.session_state.profil
     
@@ -308,14 +322,17 @@ elif menu == "Makro & Hedef Sihirbazı":
     boy = c3.number_input("Boy (cm)", min_value=120, max_value=210, value=int(p["boy"]))
     
     c4, c5 = st.columns(2)
-    kilo = c4.number_input("Kilo (kg)", min_value=35.0, max_value=160.0, value=float(p["kilo"]))
-    aktivite = c5.selectbox("Aktivite Düzeyi", ["Hareketsiz / Masa Başı", "Hafif Aktif (Haftada 1-3 gün)", "Orta Aktif (Haftada 3-5 gün)", "Çok Aktif"])
+    mevcut_kilo = c4.number_input("Mevcut Kilon (kg)", min_value=35.0, max_value=160.0, value=float(p["mevcut_kilo"]), step=0.5)
+    hedef_kilo = c5.number_input("Hedeflenen Kilon (kg)", min_value=30.0, max_value=150.0, value=float(p["hedef_kilo"]), step=0.5)
+    
+    aktivite = st.selectbox("Aktivite Düzeyi", ["Hareketsiz / Masa Başı", "Hafif Aktif (Haftada 1-3 gün)", "Orta Aktif (Haftada 3-5 gün)", "Çok Aktif"])
 
-    if st.button("Hedeflerimi Hesapla ve Kaydet"):
+    if st.button("Hedeflerimi ve Süreyi Hesapla"):
+        # BMR Hesaplama (Mifflin-St Jeor)
         if cinsiyet == "Kadın":
-            bmr = (10 * kilo) + (6.25 * boy) - (5 * yas) - 161
+            bmr = (10 * mevcut_kilo) + (6.25 * boy) - (5 * yas) - 161
         else:
-            bmr = (10 * kilo) + (6.25 * boy) - (5 * yas) + 5
+            bmr = (10 * mevcut_kilo) + (6.25 * boy) - (5 * yas) + 5
             
         carpanlar = {
             "Hareketsiz / Masa Başı": 1.2,
@@ -325,22 +342,63 @@ elif menu == "Makro & Hedef Sihirbazı":
         }
         
         tdee = bmr * carpanlar[aktivite]
+        kilo_farki = mevcut_kilo - hedef_kilo  # Pozitifse kilo verme, negatifse kilo alma hedefi
         
         st.session_state.profil["cinsiyet"] = cinsiyet
         st.session_state.profil["yas"] = yas
         st.session_state.profil["boy"] = boy
-        st.session_state.profil["kilo"] = kilo
-        st.session_state.profil["hedef_kalori"] = round(tdee)
-        st.session_state.profil["hedef_protein"] = round((tdee * 0.20) / 4)
-        st.session_state.profil["hedef_karb"] = round((tdee * 0.50) / 4)
-        st.session_state.profil["hedef_yag"] = round((tdee * 0.30) / 9)
+        st.session_state.profil["mevcut_kilo"] = mevcut_kilo
+        st.session_state.profil["hedef_kilo"] = hedef_kilo
         
+        if kilo_farki > 0:
+            # Kilo verme hedefi (Sağlıklı haftalık kilo kaybı: ~0.5 kg için günlük 500 kcal açık)
+            hedef_kalori = tdee - 500
+            st.session_state.profil["hedef_kalori"] = round(hedef_kalori)
+            
+            toplam_yakilacak_ yag_kcal = kilo_farki * 7700
+            tahmini_gun = toplam_yakilacak_ yag_kcal / 500
+            tahmini_hafta = tahmini_gun / 7
+            
+            st.success("Hedefleriniz başarıyla hesaplandı ve kaydedildi!")
+            st.markdown("---")
+            st.subheader("📊 Analiz ve Tahmin Sonuçları")
+            st.metric("Mevcut Kilo", f"{mevcut_kilo} kg")
+            st.metric("Hedef Kilo", f"{hedef_kilo} kg")
+            st.metric("Kilo Farkı", f"-{kilo_farki:.1f} kg (Verilmesi Gereken)")
+            st.metric("Günlük Harcanan Toplam Enerji (TDEE)", f"{round(tdee)} kcal")
+            st.metric("Önerilen Günlük Kalori Alımı", f"{round(hedef_kalori)} kcal")
+            st.markdown(f"💡 **Kalori Açığı:** Kilo verebilmek için günlük harcamanızın altında, **{round(hedef_kalori)} kcal** beslenmeli ve günde yaklaşık **500 kcal açık** oluşturmalısınız.")
+            st.markdown(f"⏱️ **Tahmini Süre:** Haftada ortalama 0.5 kg vererek bu hedefe **yaklaşık {tahmini_hafta:.1f} haftada (yaklaşık {round(tahmini_gun)} günde)** ulaşabilirsiniz.")
+            
+        elif kilo_farki < 0:
+            # Kilo alma hedefi
+            hedef_kalori = tdee + 300
+            st.session_state.profil["hedef_kalori"] = round(hedef_kalori)
+            
+            tahmini_gun = abs(kilo_farki * 7700) / 300
+            tahmini_hafta = tahmini_gun / 7
+            
+            st.success("Hedefleriniz başarıyla hesaplandı ve kaydedildi!")
+            st.markdown("---")
+            st.subheader("📊 Analiz ve Tahmin Sonuçları")
+            st.metric("Mevcut Kilo", f"{mevcut_kilo} kg")
+            st.metric("Hedef Kilo", f"{hedef_kilo} kg")
+            st.metric("Kilo Farkı", f"+{abs(kilo_farki):.1f} kg (Alınması Gereken)")
+            st.metric("Günlük Harcanan Toplam Enerji (TDEE)", f"{round(tdee)} kcal")
+            st.metric("Önerilen Günlük Kalori Alımı", f"{round(hedef_kalori)} kcal")
+            st.markdown(f"💡 **Kalori Fazlası:** Kilo alabilmek için günlük harcamanızın üzerinde, günde yaklaşık **300 kcal fazlalık** oluşturmalısınız.")
+            st.markdown(f"⏱️ **Tahmini Süre:** Bu hedefe **yaklaşık {tahmini_hafta:.1f} haftada (yaklaşık {round(tahmini_gun)} günde)** ulaşabilirsiniz.")
+        else:
+            st.session_state.profil["hedef_kalori"] = round(tdee)
+            st.success("Mevcut kilonuz ve hedef kilonuz aynı! Kilonuzu korumak için günlük kalori hedefiniz TDEE ile aynı ayarlandı.")
+            
+        st.session_state.profil["hedef_protein"] = round((st.session_state.profil["hedef_kalori"] * 0.20) / 4)
+        st.session_state.profil["hedef_karb"] = round((st.session_state.profil["hedef_kalori"] * 0.50) / 4)
+        st.session_state.profil["hedef_yag"] = round((st.session_state.profil["hedef_kalori"] * 0.30) / 9)
         verileri_kaydet()
-        st.success("Hedefleriniz başarıyla hesaplandı ve kalıcı olarak kaydedildi.")
-        
+
     st.markdown("---")
-    st.subheader("Mevcut Kayıtlı Hedefleriniz")
-    st.write(f"Günlük Kalori Hedefi (TDEE): **{st.session_state.profil['hedef_kalori']} kcal**")
-    st.write(f"Önerilen Protein: **{st.session_state.profil['hedef_protein']}g**")
-    st.write(f"Önerilen Karbonhidrat: **{st.session_state.profil['hedef_karb']}g**")
-    st.write(f"Önerilen Yağ: **{st.session_state.profil['hedef_yag']}g**")
+    st.subheader("Mevcut Kayıtlı Hedef Özetiniz")
+    st.write(f"Mevcut Kilo: **{st.session_state.profil['mevcut_kilo']} kg** | Hedef Kilo: **{st.session_state.profil['hedef_kilo']} kg**")
+    st.write(f"Günlük Kalori Hedefi: **{st.session_state.profil['hedef_kalori']} kcal**")
+    st.write(f"Önerilen Makro Dağılımı -> Protein: **{st.session_state.profil['hedef_protein']}g** | Karbonhidrat: **{st.session_state.profil['hedef_karb']}g** | Yağ: **{st.session_state.profil['hedef_yag']}g**")
