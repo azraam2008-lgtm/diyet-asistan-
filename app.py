@@ -153,13 +153,13 @@ if not st.session_state.giris_yapildi:
         if os.path.exists(AMBLEM_PATH):
             st.image(AMBLEM_PATH, use_container_width=True)
             
-    # Tam Genişliğe Yayılmış Akıcı Nova Banner Alanı
+    # Kutucusuz, Daha Küçük, Akıcı ve Hafif Silik Estetik Tasarım
     st.markdown("""
-        <div style="background-color: #1c2541; padding: 35px 50px; border-radius: 14px; border: 1px solid #3a506b; box-shadow: 0 6px 25px rgba(0,0,0,0.6); margin-top: 15px; margin-bottom: 25px; text-align: center;">
-            <h1 style="color: #ffffff; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 56px; font-weight: 700; letter-spacing: 35px; text-align: center; margin-bottom: 25px; width: 100%;">
+        <div style="padding: 10px 20px; margin-top: 10px; margin-bottom: 25px; text-align: center;">
+            <h1 style="color: #ffffff; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 44px; font-weight: 700; letter-spacing: 28px; text-align: center; margin-bottom: 15px; width: 100%;">
                 N O V A
             </h1>
-            <p style="font-size: 17px; line-height: 1.8; color: #ffffff; font-family: 'Cinzel', sans-serif; text-align: center; font-weight: 400; margin: 0 auto; max-width: 1100px;">
+            <p style="font-size: 14px; line-height: 1.7; color: #a0aab8; font-family: 'Cinzel', sans-serif; text-align: center; font-weight: 300; margin: 0 auto; max-width: 850px;">
                 Gökyüzünün derinliklerinde aniden parlayan bir yıldız gibidir dönüşüm... Karanlık suları aşan bir kuğunun asil zarafeti, pırlanta gibi parlayan yeni bir yaşam iradesiyle buluşur. Nova; kendi potansiyeline uyanmak, bedenine hak ettiği değeri vermek ve her gün biraz daha parlayarak kendi en büyüleyici versiyonunu baştan yaratmak isteyenlerin sığınağıdır. Işıltınla parlamaya hazır mısın?
             </p>
         </div>
