@@ -1,123 +1,174 @@
 import streamlit as st
 import pandas as pd
-import datetime
+import json
+import os
+from datetime import datetime, date
 
-st.set_page_config(page_title="Azra'nın Diyet Asistanı", page_icon="🌸", layout="wide")
+# Sayfa Yapılandırması
+st.set_page_config(
+    page_title="Beslenme ve Aktivite Takip Portalı",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-# Oturum Durumu (Session State)
-if "besin_veritabani" not in st.session_state:
-    st.session_state.besin_veritabani = {
-        "tavuk gogsu": {"kalori": 165, "protein": 31.0, "karb": 0.0, "yag": 3.6},
-        "ton baligi": {"kalori": 110, "protein": 25.0, "karb": 0.0, "yag": 1.0},
-        "marul": {"kalori": 15, "protein": 1.4, "karb": 2.9, "yag": 0.2},
-        "salatalik": {"kalori": 15, "protein": 0.7, "karb": 3.6, "yag": 0.1},
-        "domates": {"kalori": 18, "protein": 0.9, "karb": 3.9, "yag": 0.2},
-        "dilim peynir": {"kalori": 320, "protein": 22.0, "karb": 1.5, "yag": 25.0},
-        "kasar peyniri": {"kalori": 350, "protein": 25.0, "karb": 1.3, "yag": 27.0},
-        "tam bugday ekmegi": {"kalori": 247, "protein": 13.0, "karb": 41.0, "yag": 3.4},
-        "labne": {"kalori": 210, "protein": 6.0, "karb": 4.0, "yag": 20.0},
-        "sut": {"kalori": 50, "protein": 3.4, "karb": 4.8, "yag": 1.5},
-        "kahve": {"kalori": 2, "protein": 0.1, "karb": 0.3, "yag": 0.0},
-        "pirinc pilavi": {"kalori": 150, "protein": 3.0, "karb": 28.0, "yag": 3.0}
+# Yerel Veri Depolama Fonksiyonları
+DATA_FILE = "diyet_verileri.json"
+
+def veri_yukle():
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {
+        "tarifler": {
+            "Köfteli Salata": {"kalori": 480, "protein": 34, "karb": 12, "yag": 28, "birim": "porsiyon"},
+            "Kefir Karışımı (Kefir + X-Lim+)": {"kalori": 130, "protein": 11, "karb": 11, "yag": 5, "birim": "porsiyon"},
+            "Badem (1 Avuç)": {"kalori": 160, "protein": 6, "karb": 6, "yag": 14, "birim": "porsiyon"},
+            "Mandalina (3 Adet)": {"kalori": 120, "protein": 2, "karb": 30, "yag": 0, "birim": "porsiyon"},
+            "Meyveli Soda": {"kalori": 90, "protein": 0, "karb": 22, "yag": 0, "birim": "şişe"},
+            "Latte (Orta Boy)": {"kalori": 120, "protein": 6, "karb": 10, "yag": 6, "birim": "fincan"},
+            "Americano (Orta Boy)": {"kalori": 15, "protein": 0, "karb": 2, "yag": 0, "birim": "fincan"}
+        },
+        "malzemeler": {
+            "Köfte (Izgara)": {"kalori_100g": 220, "protein": 24, "karb": 2, "yag": 13},
+            "Akdeniz Yeşilliği": {"kalori_100g": 18, "protein": 1.5, "karb": 3.2, "yag": 0.2},
+            "Zeytinyağı": {"kalori_100g": 884, "protein": 0, "karb": 0, "yag": 100}
+        },
+        "gunluk_loglar": {},
+        "profil": {"hedef_kalori": 1800, "hedef_protein": 90, "hedef_karb": 200, "hedef_yag": 60}
     }
 
-if "hazir_tarifler" not in st.session_state:
-    st.session_state.hazir_tarifler = {
-        "Tavuklu Salata": {"tavuk gogsu": 200, "marul": 30, "domates": 100, "salatalik": 100, "dilim peynir": 30, "tam bugday ekmegi": 25, "labne": 15},
-        "Ton Balıklı Salata": {"ton baligi": 110, "marul": 30, "domates": 100, "salatalik": 100, "dilim peynir": 30, "tam bugday ekmegi": 25, "labne": 15},
-        "Latte": {"sut": 250, "kahve": 30},
-        "Pilav": {"pirinc pilavi": 150},
-        "Tost": {"tam bugday ekmegi": 50, "kasar peyniri": 40, "domates": 40}
-    }
+def veri_kaydet(data):
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
 
-if "gunluk_kayitlar" not in st.session_state:
-    st.session_state.gunluk_kayitlar = []
+db = veri_yukle()
 
-st.title("🌸 Azra'nın Akıllı Diyet ve Aktivite Asistanı")
+# Navigasyon
+st.sidebar.title("Kontrol Paneli")
+secim = st.sidebar.radio(
+    "Menü",
+    ["Günlük Öğün Takibi", "Haftalık Program & Değerlendirme", "Aktivite & Pilates", "Makro Sihirbazı", "Tarif & Malzeme Yönetimi"]
+)
 
-menu = st.sidebar.selectbox("Navigasyon", ["📅 Günlük Takip Paneli", "🍳 Yeni Tarif / Yemek Ekle", "⚖️ Haftalık Kilo & Tahmin Analizi"])
+# ----------------------------------------------------
+# 1. GÜNLÜK ÖĞÜN TAKİBİ
+# ----------------------------------------------------
+if secim == "Günlük Öğün Takibi":
+    st.header("Günlük Beslenme Takibi")
+    secilen_tarih = str(st.date_input("Tarih Seçin", date.today()))
 
-if menu == "📅 Günlük Takip Paneli":
-    st.header("Günlük Öğün ve Aktivite Girişi")
+    if secilen_tarih not in db["gunluk_loglar"]:
+        db["gunluk_loglar"][secilen_tarih] = {"ogunler": [], "su_lt": 0.0}
+
+    col1, col2 = st.columns([2, 1])
+
+    with col1:
+        st.subheader("Öğün Ekle")
+        tarif_listesi = list(db["tarifler"].keys())
+        secilen_tarif = st.selectbox("Tarif / Yiyecek Seç", tarif_listesi)
+        porsiyon = st.number_input("Porsiyon / Miktar", min_value=0.1, value=1.0, step=0.5)
+
+        if st.button("Öğüne Ekle"):
+            t_bilgi = db["tarifler"][secilen_tarif]
+            eklenen = {
+                "ad": secilen_tarif,
+                "porsiyon": porsiyon,
+                "kalori": t_bilgi["kalori"] * porsiyon,
+                "protein": t_bilgi["protein"] * porsiyon,
+                "karb": t_bilgi["karb"] * porsiyon,
+                "yag": t_bilgi["yag"] * porsiyon
+            }
+            db["gunluk_loglar"][secilen_tarih]["ogunler"].append(eklenen)
+            veri_kaydet(db)
+            st.success(f"{secilen_tarif} günlüğe eklendi.")
+
+    with col2:
+        st.subheader("Günlük Özet")
+        bugun_ogunler = db["gunluk_loglar"][secilen_tarih]["ogunler"]
+        toplam_kalori = sum(x["kalori"] for x in bugun_ogunler)
+        toplam_protein = sum(x["protein"] for x in bugun_ogunler)
+        toplam_karb = sum(x["karb"] for x in bugun_ogunler)
+        toplam_yag = sum(x["yag"] for x in bugun_ogunler)
+
+        st.metric("Alınan Kalori", f"{toplam_kalori:.0f} kcal / {db['profil']['hedef_kalori']} kcal")
+        st.progress(min(toplam_kalori / max(db['profil']['hedef_kalori'], 1), 1.0))
+
+        st.write(f"**Protein:** {toplam_protein:.1f}g")
+        st.write(f"**Karbonhidrat:** {toplam_karb:.1f}g")
+        st.write(f"**Yağ:** {toplam_yag:.1f}g")
+
+    st.divider()
+    st.subheader("Bugün Tüketilenler")
+    if bugun_ogunler:
+        df_bugun = pd.DataFrame(bugun_ogunler)
+        st.dataframe(df_bugun[["ad", "porsiyon", "kalori", "protein", "karb", "yag"]], use_container_width=True)
+    else:
+        st.info("Henüz kayıt eklenmedi.")
+
+# ----------------------------------------------------
+# 2. HAFTALIK PROGRAM & DEĞERLENDİRME
+# ----------------------------------------------------
+elif secim == "Haftalık Program & Değerlendirme":
+    st.header("Haftalık İlerleme ve Analiz Paneli")
+    
+    loglar = db["gunluk_loglar"]
+    if loglar:
+        ozet_veri = []
+        for tarih, icerik in loglar.items():
+            top_kalori = sum(x["kalori"] for x in icerik["ogunler"])
+            top_prot = sum(x["protein"] for x in icerik["ogunler"])
+            top_karb = sum(x["karb"] for x in icerik["ogunler"])
+            top_yag = sum(x["yag"] for x in icerik["ogunler"])
+            ozet_veri.append({
+                "Tarih": tarih,
+                "Kalori (kcal)": top_kalori,
+                "Protein (g)": top_prot,
+                "Karb (g)": top_karb,
+                "Yağ (g)": top_yag
+            })
+
+        df_hafta = pd.DataFrame(ozet_veri).sort_values("Tarih", ascending=False)
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.subheader("Kalori Grafiği")
+            st.line_chart(df_hafta.set_index("Tarih")["Kalori (kcal)"])
+
+        with col2:
+            st.subheader("Haftalık Ortalama")
+            ort_kalori = df_hafta["Kalori (kcal)"].mean()
+            st.metric("Ortalama Günlük Kalori", f"{ort_kalori:.0f} kcal")
+            if ort_kalori > db["profil"]["hedef_kalori"]:
+                st.warning("Haftalık ortalamanız belirlenen hedefin üzerinde.")
+            else:
+                st.success("Haftalık ortalamanız belirlenen hedef aralığında.")
+
+        st.subheader("Gün Gün Geçmiş Dökümü")
+        st.dataframe(df_hafta, use_container_width=True)
+    else:
+        st.info("Geçmiş verilere ulaşmak için günlük kayıt eklemelisiniz.")
+
+# ----------------------------------------------------
+# 3. AKTİVİTE & PİLATES
+# ----------------------------------------------------
+elif secim == "Aktivite & Pilates":
+    st.header("Aktivite ve Egzersiz Yönetimi")
+    
     col1, col2 = st.columns(2)
     
     with col1:
-        st.subheader("🍽️ Öğün Seçimi")
-        ogun_turu = st.selectbox("Öğün Seç", ["Kahvaltı", "Öğle Yemeği", "Akşam Yemeği", "Ara Öğün / İçecek"])
-        secilen_tarif = st.selectbox("Kütüphanedeki Tarifler", list(st.session_state.hazir_tarifler.keys()))
+        st.subheader("Pilates")
+        pilates_tur = st.selectbox("Pilates Türü", ["Mat Pilates", "Reformer Pilates", "Klinik / Yoğun Pilates"])
+        pilates_sure = st.number_input("Süre (Dakika)", min_value=10, value=45, step=5)
         
-        if st.button("🍽️ Bu Öğüne Ekle"):
-            malzemeler = st.session_state.hazir_tarifler[secilen_tarif]
-            t_kalori, t_protein, t_karb, t_yag = 0, 0, 0, 0
-            detaylar = []
-            
-            for m, gram in malzemeler.items():
-                b = st.session_state.besin_veritabani[m]
-                oran = gram / 100.0
-                t_kalori += b["kalori"] * oran
-                t_protein += b["protein"] * oran
-                t_karb += b["karb"] * oran
-                t_yag += b["yag"] * oran
-                detaylar.append(f"{gram}g {m}")
-                
-            st.session_state.gunluk_kayitlar.append({
-                "Öğün": ogun_turu, "Tarif": secilen_tarif, "İçerik": ", ".join(detaylar),
-                "Kalori": round(t_kalori, 1), "Protein": round(t_protein, 1),
-                "Karbonhidrat": round(t_karb, 1), "Yağ": round(t_yag, 1)
-            })
-            st.success(f"✅ {secilen_tarif} eklendi!")
+        # Ortalama MET değerleri
+        met_map = {"Mat Pilates": 3.0, "Reformer Pilates": 4.0, "Klinik / Yoğun Pilates": 5.0}
+        yakilan_p = (met_map[pilates_tur] * 60 * (pilates_sure / 60))  # Yaklaşık 60 kg baz alınarak standart hesap
+        st.info(f"Tahmini Harcanan Kalori: **{yakilan_p:.0f} kcal**")
 
     with col2:
-        st.subheader("🚶‍♀️ Fiziksel Aktivite & Su")
-        adim_sayisi = st.number_input("Günlük Adım Sayısı", min_value=0, max_value=50000, value=15000, step=500)
-        su_miktari = st.slider("Su Tüketimi (Litre)", 0.0, 5.0, 2.0, 0.5)
-
-    st.markdown("---")
-    st.subheader("📊 Günlük Özet Tablosu")
-    
-    if st.session_state.gunluk_kayitlar:
-        df_kayitlar = pd.DataFrame(st.session_state.gunluk_kayitlar)
-        st.dataframe(df_kayitlar, use_container_width=True)
+        st.subheader("Yürüyüş")
+        yuruyus_tur = st.selectbox("Yürüyüş Temposu", ["Hafif Tempo (4 km/s)", "Orta Tempo (5 km/s)", "Hızlı / Eğimli (6.5 km/s)"])
+        yuruyus_sure = st.number_input("Yürüyüş Süresi (Dakika)", min_value=10, value=30, step=5)
         
-        toplam_alnan = df_kayitlar["Kalori"].sum()
-        toplam_protein = df_kayitlar["Protein"].sum()
-        toplam_karb = df_kayitlar["Karbonhidrat"].sum()
-        toplam_yag = df_kayitlar["Yağ"].sum()
-        
-        bmr = (10 * 68.0) + (6.25 * 160) - (5 * 18) - 161
-        adim_kalorisi = (adim_sayisi / 1000) * 45
-        toplam_harcanan = bmr + adim_kalorisi
-        net_denge = toplam_alnan - toplam_harcanan
-        
-        m1, m2, m3 = st.columns(3)
-        m1.metric("Alınan Kalori", f"{toplam_alnan:.1f} kcal")
-        m2.metric("Harcanan Kalori", f"{toplam_harcanan:.1f} kcal")
-        m3.metric("Net Kalori Dengesi", f"{net_denge:.1f} kcal")
-        st.info(f"🥩 Protein: {toplam_protein:.1f}g | 🍞 Karbonhidrat: {toplam_karb:.1f}g | 🥑 Yağ: {toplam_yag:.1f}g | 💧 Su: {su_miktari}L")
-
-elif menu == "🍳 Yeni Tarif / Yemek Ekle":
-    st.header("🍳 Kendi Tarifini Oluştur")
-    yeni_tarif_adi = st.text_input("Tarif Adı")
-    secilen_malzemeler = {}
-    
-    cols = st.columns(3)
-    mevcut_malzemeler = list(st.session_state.besin_veritabani.keys())
-    
-    for i, m in enumerate(mevcut_malzemeler):
-        with cols[i % 3]:
-            if st.checkbox(f"{m.title()}", key=f"chk_{m}"):
-                gram = st.number_input(f"{m.title()} (Gram/ml)", min_value=5, max_value=1000, value=100, step=5, key=f"gram_{m}")
-                secilen_malzemeler[m] = gram
-
-    if st.button("✨ Bu Tarifi Kaydet"):
-        if yeni_tarif_adi and secilen_malzemeler:
-            st.session_state.hazir_tarifler[yeni_tarif_adi] = secilen_malzemeler
-            st.success(f"🎉 '{yeni_tarif_adi}' kütüphaneye eklendi!")
-        else:
-            st.warning("⚠️ Lütfen tarif adı yazın ve en az bir malzeme seçin.")
-
-elif menu == "⚖️ Haftalık Kilo & Tahmin Analizi":
-    st.header("🗓️ Haftalık Kilo Takibi ve Tahmin")
-    yeni_kilo = st.number_input("Güncel Tartı Ölçümün (kg)", min_value=30.0, max_value=150.0, value=68.0, step=0.1)
-    if st.button("🔮 Haftalık Analizi Çalıştır"):
-        st.success(f"Kilo {yeni_kilo} kg olarak güncellendi ve kaydedildi!")
+        met_y_map = {"Hafif
