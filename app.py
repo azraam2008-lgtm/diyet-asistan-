@@ -2,16 +2,6 @@ import datetime
 import hashlib
 import json
 import os
-import subprocess
-import sys
-
-# Plotly otomatik kontrol ve yükleme (Eksikse yükler, uygulamayı çökertmez)
-try:
-  import plotly.express as px
-except ImportError:
-  subprocess.check_call([sys.executable, "-m", "pip", "install", "plotly"])
-  import plotly.express as px
-
 import pandas as pd
 import streamlit as st
 
@@ -668,7 +658,6 @@ else:
           step=500,
       )
 
-      # Slider tamamen kaldırıldı, Ring üzerinden İnteraktif Su Kontrolü
       su_miktari = curr_aktivite["su"]
 
       st.markdown(
@@ -830,7 +819,6 @@ else:
           unsafe_allow_html=True,
       )
 
-      # Estetik Kart Tasarımı ile Günlük Öğün Listeleme & Silme
       for idx, item in bugun_kayitlari:
         col_card, col_btn = st.columns([12, 1])
         with col_card:
@@ -902,48 +890,21 @@ else:
 
       hedef_k = st.session_state.profil.get("hedef_kalori", 1800)
       haftalik_ozet["Hedef Kalori"] = hedef_k
-      haftalik_ozet["Fark"] = haftalik_ozet["Kalori"] - haftalik_ozet["Hedef Kalori"]
+      haftalik_ozet["Fark (Alınan - Hedef)"] = (
+          haftalik_ozet["Kalori"] - haftalik_ozet["Hedef Kalori"]
+      )
 
-      st.subheader("📊 İnteraktif Haftalık Alınan Kalori Analizi")
+      st.subheader("📊 Haftalık Alınan Kalori Trendi")
       st.markdown(
-          "<span style='color: #a0aab8; font-size: 13.5px;'>Grafiğin üzerine"
-          " dokunarak veya imleci yaklaştırarak aldığın kaloriyi, hedef"
-          " kaloriyi ve aralarındaki farkı inceleyebilirsin.</span>",
+          "<span style='color: #a0aab8; font-size: 13.5px;'>Günlere göre"
+          " aldığın kalori miktarları aşağıda çizgi grafiği olarak"
+          " gösterilmektedir.</span>",
           unsafe_allow_html=True,
       )
 
-      # Yalnızca alınan kaloriyi gösteren, üzerine gelince hedefi ve farkı gösteren Plotly interaktif grafik
-      fig = px.line(
-          haftalik_ozet,
-          x="Tarih",
-          y="Kalori",
-          markers=True,
-          labels={"Kalori": "Alınan Kalori (kcal)", "Tarih": "Tarih"},
-      )
-      fig.update_traces(
-          line_color="#48cae4",
-          line_width=3,
-          marker=dict(size=10, color="#48cae4"),
-          hoovertemplate=(
-              "<b>Tarih:</b> %{x}<br><b>Alınan Kalori:</b> %{y:.1f}"
-              " kcal<br><b>Hedef Kalori:</b> %{customdata[0]} kcal<br><b>Fark:"
-              "</b> %{customdata[1]:+.1f} kcal<extra></extra>"
-          ),
-          customdata=haftalik_ozet[["Hedef Kalori", "Fark"]].values,
-      )
-      fig.update_layout(
-          paper_bgcolor="rgba(0,0,0,0)",
-          plot_bgcolor="rgba(0,0,0,0)",
-          font=dict(color="#e0e1dd", family="Plus Jakarta Sans"),
-          xaxis=dict(showgrid=False, zeroline=False, color="#a0aab8"),
-          yaxis=dict(
-              showgrid=True,
-              gridcolor="rgba(72, 202, 228, 0.15)",
-              color="#a0aab8",
-          ),
-          hovermode="x unified",
-      )
-      st.plotly_chart(fig, use_container_width=True)
+      # Streamlit dahili line_chart ile tertemiz çizgi grafik
+      chart_df = haftalik_ozet.set_index("Tarih")[["Kalori"]]
+      st.line_chart(chart_df, color="#48cae4")
 
       ortalama_kalori = haftalik_ozet["Kalori"].mean()
 
@@ -973,7 +934,7 @@ else:
   # TARİF & MALZEME YÖNETİMİ
   # ----------------------------------------------------
   elif menu == "Tarif & Malzeme Yönetimi":
-    st.header("Tarif and Malzeme Yönetim Paneli")
+    st.header("Tarif ve Malzeme Yönetim Paneli")
 
     tab1, tab2 = st.tabs(
         ["1. Yeni Malzeme Ekle", "2. Gramaj Esaslı Estetik Tarif Kütüphanesi"]
