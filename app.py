@@ -139,16 +139,17 @@ st.markdown(
 USERS_FILE = "kullanicilar.json"
 AMBLEM_PATH = "watermarked_img_10875607693201107735.jpg"
 
-# Geniş aralıklı, tüm satırı kaplayan zarif NOVA başlığı
+# Ana sayfa için geniş aralıklı, tüm satırı kaplayan zarif yatay NOVA başlığı
 LOGO_MAIN = """
 <div style="text-align: center; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 44px; font-weight: 700; letter-spacing: 22px; color: #ffffff; margin-bottom: 5px;">
     N&nbsp;&nbsp;O&nbsp;&nbsp;V&nbsp;&nbsp;A
 </div>
 """
 
+# Yan menü (sidebar) için harflerin alt alta süzüldüğü dikey NOVA tasarımı
 LOGO_SIDEBAR = """
-<div style="text-align: center; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 30px; font-weight: 700; letter-spacing: 14px; color: #ffffff; margin-top: 10px; margin-bottom: 15px;">
-    N&nbsp;&nbsp;O&nbsp;&nbsp;V&nbsp;&nbsp;A
+<div style="text-align: center; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 32px; font-weight: 700; line-height: 1.2; letter-spacing: 6px; color: #ffffff; margin-top: 10px; margin-bottom: 15px;">
+    N<br>O<br>V<br>A
 </div>
 """
 
