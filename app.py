@@ -418,7 +418,6 @@ def verileri_yukle(username):
           profil["hedef_kilo"] = 55.0
         data["profil"] = profil
 
-        # Yeni besinleri mevcut kullanıcının veritabanına ekleme kontrolü
         for k, v in default_data["besin_veritabani"].items():
           if k not in data["besin_veritabani"]:
             data["besin_veritabani"][k] = v
@@ -462,18 +461,18 @@ if not st.session_state.giris_yapildi:
 
   st.markdown(
       f"""
-        <div style="max-width: 740px; margin: 0 auto; padding: 0px 15px; margin-bottom: 5px;">
-            <div class="nova-logo-title">
-                <span>N</span>
-                {SWAN_SVG_HTML}
-                <span>V</span>
-                <span>A</span>
-            </div>
-            <p style="font-size: 13px; line-height: 1.7; color: #9da8b5; font-family: 'Playfair Display', Georgia, serif; font-style: italic; text-align: justify; font-weight: 400; margin: 0;">
-                Gökyüzünün derinliklerinde aniden parlayan bir yıldız gibidir dönüşüm... Karanlık suları aşan bir kuğunun asil zarafeti, pırlanta gibi parlayan yeni bir yaşam iradesiyle buluşur. Nova; kendi potansiyeline uyanmak, bedenine hak ettiği değeri vermek ve her gün biraz daha parlayarak kendi en büyüleyici versiyonunu baştan yaratmak isteyenlerin sığınağıdır. Işıltınla parlamaya hazır mısın?
-            </p>
-        </div>
-    """,
+      <div style="max-width: 740px; margin: 0 auto; padding: 0px 15px; margin-bottom: 5px;">
+          <div class="nova-logo-title">
+              <span>N</span>
+              {SWAN_SVG_HTML}
+              <span>V</span>
+              <span>A</span>
+          </div>
+          <p style="font-size: 13px; line-height: 1.7; color: #9da8b5; font-family: 'Playfair Display', Georgia, serif; font-style: italic; text-align: justify; font-weight: 400; margin: 0;">
+              Gökyüzünün derinliklerinde aniden parlayan bir yıldız gibidir dönüşüm... Karanlık suları aşan bir kuğunun asil zarafeti, pırlanta gibi parlayan yeni bir yaşam iradesiyle buluşur. Nova; kendi potansiyeline uyanmak, bedenine hak ettiği değeri vermek ve her gün biraz daha parlayarak kendi en büyüleyici versiyonunu baştan yaratmak isteyenlerin sığınağıdır. Işıltınla parlamaya hazır mısın?
+          </p>
+      </div>
+      """,
       unsafe_allow_html=True,
   )
 
