@@ -12,7 +12,7 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------
-# TEMEL STİLLER
+# 1. GENEL STİLLER & CSS
 # ----------------------------------------------------
 st.markdown(
     """
@@ -118,6 +118,18 @@ st.markdown(
         margin-top: 8px;
         margin-bottom: 5px;
     }
+
+    /* Giriş Sayfası Küçük ve Zarif İtalik Yazı Stili */
+    .landing-subtext {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-style: italic;
+        font-size: 13px;
+        line-height: 1.8;
+        color: #9da8b5;
+        text-align: justify;
+        font-weight: 400;
+        margin-top: 15px;
+    }
     </style>
 """,
     unsafe_allow_html=True,
@@ -126,14 +138,31 @@ st.markdown(
 USERS_FILE = "kullanicilar.json"
 AMBLEM_PATH = "watermarked_img_10875607693201107735.jpg"
 
-# "O" Harfi Yerine Doğrudan Kuğu Simgesi (SVG)
-LOGO_HTML = """
-<div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 40px; font-weight: 700; color: #ffffff;">
+# ----------------------------------------------------
+# AÇIK KIVRIK BOYUNLU KUSURSUZ KUĞU LOGOSU (N[Kuğu]VA)
+# ----------------------------------------------------
+LOGO_MAIN = """
+<div style="display: flex; align-items: center; justify-content: center; gap: 4px; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 42px; font-weight: 700; color: #ffffff;">
     <span>N</span>
-    <span style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; vertical-align: middle; margin: 0 -2px;">
-        <svg viewBox="0 0 24 24" style="width: 100%; height: 100%; fill: none; stroke: #ffffff; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;">
-            <path d="M19 15c0 1.657-1.343 3-3 3H8c-2.209 0-4-1.791-4-4 0-1.5 1-2.8 2.5-3.5C8.2 8.5 9 6.5 9 5c0-1.657 1.343-3 3-3s3 1.343 3 3v2.5c2.5 1 4 2.5 4 4.5.5 1.2.5 2.5 1 3z"/>
-            <path d="M12 5c-.4 1-1.2 2-2 2.5"/>
+    <span style="display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; margin: 0 -2px;">
+        <svg viewBox="0 0 24 24" style="width: 100%; height: 100%; fill: none; stroke: #ffffff; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round;">
+            <!-- Zarif Kuğu Kıvrımı -->
+            <path d="M22 17c0 2.2-1.8 4-4 4H6c-2.2 0-4-1.8-4-4 0-1.8 1.2-3.3 2.8-3.8.7-.2 1.2-1 1.2-1.8v-1c0-1.1.9-2 2-2s2 .9 2 2v1c0 1 .8 1.8 1.8 2 1.6.5 2.8 2 2.8 3.8z"></path>
+            <path d="M12 5c-.5 1-1.5 2-2.5 2.5"></path>
+        </svg>
+    </span>
+    <span>V</span>
+    <span>A</span>
+</div>
+"""
+
+LOGO_SIDEBAR = """
+<div style="display: flex; align-items: center; justify-content: center; gap: 4px; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 36px; font-weight: 700; color: #ffffff; margin-top: 10px; margin-bottom: 20px;">
+    <span>N</span>
+    <span style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; margin: 0 -2px;">
+        <svg viewBox="0 0 24 24" style="width: 100%; height: 100%; fill: none; stroke: #ffffff; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round;">
+            <path d="M22 17c0 2.2-1.8 4-4 4H6c-2.2 0-4-1.8-4-4 0-1.8 1.2-3.3 2.8-3.8.7-.2 1.2-1 1.2-1.8v-1c0-1.1.9-2 2-2s2 .9 2 2v1c0 1 .8 1.8 1.8 2 1.6.5 2.8 2 2.8 3.8z"></path>
+            <path d="M12 5c-.5 1-1.5 2-2.5 2.5"></path>
         </svg>
     </span>
     <span>V</span>
@@ -143,7 +172,7 @@ LOGO_HTML = """
 
 
 # ----------------------------------------------------
-# KULLANICI YÖNETİMİ & ŞİFRELEME FONKSİYONLARI
+# KULLANICI YÖNETİMİ & VERİTABANI
 # ----------------------------------------------------
 def sifre_hashle(sifre):
   return hashlib.sha256(sifre.encode("utf-8")).hexdigest()
@@ -368,7 +397,7 @@ def verileri_kaydet(username):
 
 
 # ----------------------------------------------------
-# 1. OTURUM KONTROLÜ VE GİRİŞ / KAYIT EKRANI
+# 1. OTURUM KONTROLÜ VE GİRİŞ EKRANI
 # ----------------------------------------------------
 if "giris_yapildi" not in st.session_state:
   st.session_state.giris_yapildi = False
@@ -381,15 +410,18 @@ if not st.session_state.giris_yapildi:
     if os.path.exists(AMBLEM_PATH):
       st.image(AMBLEM_PATH, use_container_width=True)
 
+  # Başlık ve Açıklama Yazısı
   st.markdown(
-      f"""
-      <div style="max-width: 740px; margin: 0 auto; padding: 0px 15px; margin-bottom: 5px;">
-          {LOGO_HTML}
-          <p style="font-size: 13px; line-height: 1.7; color: #9da8b5; font-family: 'Playfair Display', Georgia, serif; font-style: italic; text-align: justify; font-weight: 400; margin-top: 15px;">
-              Gökyüzünün derinliklerinde aniden parlayan bir yıldız gibidir dönüşüm... Karanlık suları aşan bir kuğunun asil zarafeti, pırlanta gibi parlayan yeni bir yaşam iradesiyle buluşur. Nova; kendi potansiyeline uyanmak, bedenine hak ettiği değeri vermek ve her gün biraz daha parlayarak kendi en büyüleyici versiyonunu baştan yaratmak isteyenlerin sığınağıdır. Işıltınla parlamaya hazır mısın?
-          </p>
-      </div>
-      """,
+      '<div style="max-width: 740px; margin: 0 auto; padding: 0px 15px;'
+      ' margin-bottom: 5px;">'
+      + LOGO_MAIN
+      + '<p class="landing-subtext">Gökyüzünün derinliklerinde aniden parlayan'
+      " bir yıldız gibidir dönüşüm... Karanlık suları aşan bir kuğunun asil"
+      " zarafeti, pırlanta gibi parlayan yeni bir yaşam iradesiyle buluşur."
+      " Nova; kendi potansiyeline uyanmak, bedenine hak ettiği değeri vermek ve"
+      " her gün biraz daha parlayarak kendi en büyüleyici versiyonunu baştan"
+      " yaratmak isteyenlerin sığınağıdır. Işıltınla parlamaya hazır"
+      " mısın?</p></div>",
       unsafe_allow_html=True,
   )
 
@@ -446,11 +478,11 @@ if not st.session_state.giris_yapildi:
 
 else:
   # ----------------------------------------------------
-  # 2. ANA UYGULAMA PANELİ
+  # 2. ANA UYGULAMA PANELİ (Giriş Yapılmış Halde)
   # ----------------------------------------------------
   aktif_user = st.session_state.aktif_kullanici
 
-  st.sidebar.markdown(LOGO_HTML, unsafe_allow_html=True)
+  st.sidebar.markdown(LOGO_SIDEBAR, unsafe_allow_html=True)
 
   c_mid1, c_mid2, c_mid3 = st.sidebar.columns([1, 1.2, 1])
   with c_mid2:
