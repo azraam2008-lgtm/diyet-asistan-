@@ -33,6 +33,52 @@ st.markdown(
         color: #ffffff !important;
     }
 
+    /* Kuğu Logosu Stil Tanımlamaları */
+    .nova-logo-title {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-family: 'Playfair Display', Georgia, serif;
+        font-style: italic;
+        font-size: 42px;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 10px;
+    }
+
+    .nova-logo-sidebar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-family: 'Playfair Display', Georgia, serif;
+        font-style: italic;
+        font-size: 38px;
+        font-weight: 700;
+        color: #ffffff;
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+
+    .swan-svg {
+        display: inline-block;
+        width: 38px;
+        height: 38px;
+        vertical-align: middle;
+    }
+
+    .swan-svg svg {
+        width: 100%;
+        height: 100%;
+        fill: none;
+        stroke: #ffffff;
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+    }
+
     /* Sidebar (Yan Menü) Tasarımı */
     [data-testid="stSidebar"] {
         background-color: #1c2541;
@@ -57,7 +103,7 @@ st.markdown(
         border-bottom: 2px solid #48cae4 !important;
     }
 
-    /* Lüks Metric Kartları (Rakamların Kesilmesini Engelleyen Özel Tasarım) */
+    /* Lüks Metric Kartları */
     [data-testid="stMetric"] {
         background: linear-gradient(135deg, rgba(28, 37, 65, 0.9) 0%, rgba(11, 19, 43, 0.95) 100%);
         border: 1px solid rgba(72, 202, 228, 0.25);
@@ -163,6 +209,16 @@ st.markdown(
 USERS_FILE = "kullanicilar.json"
 AMBLEM_PATH = "watermarked_img_10875607693201107735.jpg"
 
+# Kuğu SVG Kodu HTML
+SWAN_SVG_HTML = """
+<span class="swan-svg">
+    <svg viewBox="0 0 24 24">
+        <path d="M19 15c0 1.657-1.343 3-3 3H8c-2.209 0-4-1.791-4-4 0-1.5 1-2.8 2.5-3.5C8.2 8.5 9 6.5 9 5c0-1.657 1.343-3 3-3s3 1.343 3 3v2.5c2.5 1 4 2.5 4 4.5.5 1.2.5 2.5 1 3z"/>
+        <path d="M12 5c-.4 1-1.2 2-2 2.5"/>
+    </svg>
+</span>
+"""
+
 
 # ----------------------------------------------------
 # KULLANICI YÖNETİMİ & ŞİFRELEME FONKSİYONLARI
@@ -241,6 +297,50 @@ def verileri_yukle(username):
               "karb": 11.0,
               "yag": 0.0,
           },
+          "lahmacun": {
+              "kalori": 220,
+              "protein": 9.5,
+              "karb": 28.0,
+              "yag": 7.5,
+          },
+          "kiymali borek": {
+              "kalori": 290,
+              "protein": 9.0,
+              "karb": 32.0,
+              "yag": 14.0,
+          },
+          "taze fasulye": {
+              "kalori": 45,
+              "protein": 2.0,
+              "karb": 7.0,
+              "yag": 1.5,
+          },
+          "pirinc pilavi": {
+              "kalori": 180,
+              "protein": 3.0,
+              "karb": 38.0,
+              "yag": 2.5,
+          },
+          "bulgur pilavi": {
+              "kalori": 150,
+              "protein": 4.5,
+              "karb": 30.0,
+              "yag": 1.8,
+          },
+          "pirasa": {"kalori": 61, "protein": 1.5, "karb": 14.0, "yag": 0.3},
+          "yulaf": {"kalori": 389, "protein": 16.9, "karb": 66.3, "yag": 6.9},
+          "orman meyveleri": {
+              "kalori": 57,
+              "protein": 0.7,
+              "karb": 13.6,
+              "yag": 0.3,
+          },
+          "findik ezmesi": {
+              "kalori": 628,
+              "protein": 15.0,
+              "karb": 17.0,
+              "yag": 54.0,
+          },
       },
       "hazir_tarifler": {
           "Tavuklu Salata": {
@@ -279,6 +379,18 @@ def verileri_yukle(username):
           "Badem (1 Avuç)": {"badem": 30},
           "Mandalina (3 Adet)": {"mandalina": 300},
           "Meyveli Soda": {"meyveli soda": 200},
+          "Standart Lahmacun (1 Adet)": {"lahmacun": 150},
+          "Kıymalı Börek (Yarım Porsiyon)": {"kiymali borek": 100},
+          "Taze Fasulye (1 Porsiyon)": {"taze fasulye": 200},
+          "Pirinç Pilavı (1 Porsiyon)": {"pirinc pilavi": 150},
+          "Bulgur Pilavı (1 Porsiyon)": {"bulgur pilavi": 150},
+          "Pırasa (1 Porsiyon)": {"pirasa": 200},
+          "Orman Meyveli Fındıklı Yulaf Lapası": {
+              "sut": 200,
+              "yulaf": 30,
+              "orman meyveleri": 50,
+              "findik ezmesi": 15,
+          },
       },
       "gunluk_kayitlar": [],
       "aktivite_loglari": {},
@@ -305,6 +417,16 @@ def verileri_yukle(username):
         if "hedef_kilo" not in profil:
           profil["hedef_kilo"] = 55.0
         data["profil"] = profil
+
+        # Yeni besinleri mevcut kullanıcının veritabanına ekleme kontrolü
+        for k, v in default_data["besin_veritabani"].items():
+          if k not in data["besin_veritabani"]:
+            data["besin_veritabani"][k] = v
+
+        for k, v in default_data["hazir_tarifler"].items():
+          if k not in data["hazir_tarifler"]:
+            data["hazir_tarifler"][k] = v
+
         return data
     except:
       return default_data
@@ -339,11 +461,11 @@ if not st.session_state.giris_yapildi:
       st.image(AMBLEM_PATH, use_container_width=True)
 
   st.markdown(
-      """
+      f"""
         <div style="max-width: 740px; margin: 0 auto; padding: 0px 15px; margin-bottom: 5px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 42px; font-weight: 700; color: #ffffff; margin-bottom: 10px; padding: 0 4px;">
+            <div class="nova-logo-title">
                 <span>N</span>
-                <span>O</span>
+                {SWAN_SVG_HTML}
                 <span>V</span>
                 <span>A</span>
             </div>
@@ -412,12 +534,15 @@ else:
   # ----------------------------------------------------
   aktif_user = st.session_state.aktif_kullanici
 
-  # Büyütülmüş ve Yaygın (Letter-Spacing Yüksek) Sol Menü N O V A Başlığı
+  # Özel Kuğu Logolu Sol Menü N[Kuğu]VA Başlığı
   st.sidebar.markdown(
-      """
-      <h1 style="font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 38px; font-weight: 700; letter-spacing: 14px; text-align: center; color: #ffffff; margin-top: 10px; margin-bottom: 20px;">
-          N O V A
-      </h1>
+      f"""
+      <div class="nova-logo-sidebar">
+          <span>N</span>
+          {SWAN_SVG_HTML}
+          <span>V</span>
+          <span>A</span>
+      </div>
   """,
       unsafe_allow_html=True,
   )
