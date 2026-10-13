@@ -122,14 +122,14 @@ st.markdown(
     .landing-subtext {
         font-family: 'Playfair Display', Georgia, serif;
         font-style: italic;
-        font-size: 10.5px;
-        line-height: 1.4;
-        color: #788496;
-        text-align: center;
+        font-size: 13.5px;
+        line-height: 1.7;
+        color: #9da8b5;
+        text-align: justify;
         font-weight: 400;
-        margin-top: 5px;
-        margin-bottom: 15px;
-        letter-spacing: 0.3px;
+        margin-top: 12px;
+        margin-bottom: 20px;
+        letter-spacing: 0.2px;
     }
     </style>
 """,
@@ -139,9 +139,9 @@ st.markdown(
 USERS_FILE = "kullanicilar.json"
 AMBLEM_PATH = "watermarked_img_10875607693201107735.jpg"
 
-# İstediğin gibi geniş aralıklı, tüm satırı kaplayan zarif NOVA başlığı
+# Geniş aralıklı, tüm satırı kaplayan zarif NOVA başlığı
 LOGO_MAIN = """
-<div style="text-align: center; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 44px; font-weight: 700; letter-spacing: 22px; color: #ffffff; margin-bottom: 2px;">
+<div style="text-align: center; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 44px; font-weight: 700; letter-spacing: 22px; color: #ffffff; margin-bottom: 5px;">
     N&nbsp;&nbsp;O&nbsp;&nbsp;V&nbsp;&nbsp;A
 </div>
 """
@@ -393,11 +393,16 @@ if not st.session_state.giris_yapildi:
       st.image(AMBLEM_PATH, use_container_width=True)
 
   st.markdown(
-      '<div style="max-width: 740px; margin: 0 auto; padding: 0px 15px;'
-      " margin-bottom: 5px;\">"
+      '<div style="max-width: 760px; margin: 0 auto; padding: 0px 15px;'
+      ' margin-bottom: 10px;">'
       + LOGO_MAIN
-      + '<p class="landing-subtext">Karanlık suları aşan zarafet ve yeni yaşam'
-      " iradesiyle kendi potansiyeline uyanma vakti.</p></div>",
+      + '<p class="landing-subtext">Gökyüzünün derinliklerinde aniden parlayan'
+      " bir yıldız gibidir dönüşüm... Karanlık suları aşan bir kuğunun asil"
+      " zarafeti, pırlanta gibi parlayan yeni bir yaşam iradesiyle buluşur."
+      " Nova; kendi potansiyeline uyanmak, bedenine hak ettiği değeri vermek ve"
+      " her gün biraz daha parlayarak kendi en büyüleyici versiyonunu baştan"
+      " yaratmak isteyenlerin sığınağıdır. Işıltınla parlamaya hazır"
+      " mısın?</p></div>",
       unsafe_allow_html=True,
   )
 
