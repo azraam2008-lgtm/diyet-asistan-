@@ -146,10 +146,13 @@ LOGO_MAIN = """
 </div>
 """
 
-# Yan menü (sidebar) için harflerin alt alta süzüldüğü dikey NOVA tasarımı
+# Yan menü (sidebar) için kusursuz hizada, eşit aralıklı dikey NOVA tasarımı
 LOGO_SIDEBAR = """
-<div style="text-align: center; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 32px; font-weight: 700; line-height: 1.2; letter-spacing: 6px; color: #ffffff; margin-top: 10px; margin-bottom: 15px;">
-    N<br>O<br>V<br>A
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 30px; font-weight: 700; color: #ffffff; gap: 8px; margin-top: 10px; margin-bottom: 15px;">
+    <span>N</span>
+    <span>O</span>
+    <span>V</span>
+    <span>A</span>
 </div>
 """
 
