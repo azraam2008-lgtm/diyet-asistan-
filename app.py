@@ -139,14 +139,12 @@ st.markdown(
 USERS_FILE = "kullanicilar.json"
 AMBLEM_PATH = "watermarked_img_10875607693201107735.jpg"
 
-# Ana sayfa için geniş aralıklı, tüm satırı kaplayan zarif yatay NOVA başlığı
 LOGO_MAIN = """
 <div style="text-align: center; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 44px; font-weight: 700; letter-spacing: 22px; color: #ffffff; margin-bottom: 5px;">
     N&nbsp;&nbsp;O&nbsp;&nbsp;V&nbsp;&nbsp;A
 </div>
 """
 
-# Yan menü (sidebar) için kusursuz hizada, eşit aralıklı dikey NOVA tasarımı
 LOGO_SIDEBAR = """
 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 30px; font-weight: 700; color: #ffffff; gap: 8px; margin-top: 10px; margin-bottom: 15px;">
     <span>N</span>
@@ -278,6 +276,38 @@ def verileri_yukle(username):
               "karb": 17.0,
               "yag": 54.0,
           },
+          # Kullanıcının Eklediği Yeni Lezzetler ve Tatlılar (100g/ml Başına)
+          "kofte burger": {
+              "kalori": 250,
+              "protein": 12.0,
+              "karb": 25.0,
+              "yag": 11.0,
+          },
+          "tavuk burger": {
+              "kalori": 230,
+              "protein": 13.0,
+              "karb": 24.0,
+              "yag": 9.0,
+          },
+          "patates kizartmasi": {
+              "kalori": 312,
+              "protein": 3.4,
+              "karb": 41.0,
+              "yag": 15.0,
+          },
+          "kola": {"kalori": 42, "protein": 0.0, "karb": 10.6, "yag": 0.0},
+          "pizza": {"kalori": 266, "protein": 11.0, "karb": 33.0, "yag": 10.0},
+          "elma": {"kalori": 52, "protein": 0.3, "karb": 14.0, "yag": 0.2},
+          "baklava": {"kalori": 400, "protein": 5.0, "karb": 50.0, "yag": 20.0},
+          "sutlac": {"kalori": 130, "protein": 3.5, "karb": 22.0, "yag": 3.0},
+          "waffle": {"kalori": 350, "protein": 6.0, "karb": 45.0, "yag": 16.0},
+          "spoonful tatlisi": {
+              "kalori": 380,
+              "protein": 4.0,
+              "karb": 48.0,
+              "yag": 18.0,
+          },
+          "pancake": {"kalori": 227, "protein": 6.0, "karb": 30.0, "yag": 9.0},
       },
       "hazir_tarifler": {
           "Tavuklu Salata": {
@@ -328,6 +358,22 @@ def verileri_yukle(username):
               "orman meyveleri": 50,
               "findik ezmesi": 15,
           },
+          # Kullanıcının İstediği Yeni Tarifler / Porsiyonlar
+          "Standart Köfte Burger (1 Adet)": {"kofte burger": 200},
+          "Tavuk Burger (1 Adet)": {"tavuk burger": 180},
+          "Küçük Patates Kızartması": {"patates kizartmasi": 90},
+          "Orta Patates Kızartması": {"patates kizartmasi": 130},
+          "Büyük Patates Kızartması": {"patates kizartmasi": 180},
+          "Orta Boy Kola (330ml)": {"kola": 330},
+          "Büyük Boy Kola (500ml)": {"kola": 500},
+          "Orta Boy Pizza (~300g)": {"pizza": 300},
+          "Büyük Boy Pizza (~500g)": {"pizza": 500},
+          "Elma (1 Adet)": {"elma": 150},
+          "Baklava (1 Dilim)": {"baklava": 50},
+          "Sütlaç (1 Porsiyon)": {"sutlac": 200},
+          "Waffle (Standart Porsiyon)": {"waffle": 250},
+          "Spoonful Tatlısı (1 Porsiyon)": {"spoonful tatlisi": 150},
+          "Küçük Boy Pancake": {"pancake": 100},
       },
       "gunluk_kayitlar": [],
       "aktivite_loglari": {},
@@ -577,6 +623,30 @@ else:
           "Su Tüketimi (Litre)", 0.0, 5.0, float(curr_aktivite["su"]), 0.5
       )
 
+      # Apple Fitness Tarzı Dairesel Su Halkası Göstergesi
+      max_su = 3.0  # Hedef 3 Litre
+      su_oran = min(1.0, su_miktari / max_su)
+      c_circumference = 2 * 3.14159 * 36
+      c_offset = c_circumference * (1 - su_oran)
+
+      st.markdown(
+          f"""
+            <div style="display: flex; align-items: center; justify-content: center; margin: 10px 0;">
+                <div style="position: relative; width: 90px; height: 90px;">
+                    <svg width="90" height="90" style="transform: rotate(-90deg);">
+                        <circle cx="45" cy="45" r="36" stroke="#1c2541" stroke-width="8" fill="transparent"/>
+                        <circle cx="45" cy="45" r="36" stroke="#48cae4" stroke-width="8" stroke-dasharray="{c_circumference}" stroke-dashoffset="{c_offset}" stroke-linecap="round" fill="transparent"/>
+                    </svg>
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Plus Jakarta Sans', sans-serif;">
+                        <span style="font-size: 16px; font-weight: 700; color: #ffffff;">{su_miktari}L</span>
+                        <span style="font-size: 10px; color: #a0aab8;">SU RİNGİ</span>
+                    </div>
+                </div>
+            </div>
+            """,
+          unsafe_allow_html=True,
+      )
+
       pilates_secenekleri = [
           "Mat Pilates",
           "Reformer Pilates",
@@ -630,7 +700,7 @@ else:
         st.success("Aktivite bilgileri kaydedildi.")
 
     st.markdown("---")
-    st.subheader("Günlük Genel Denge ve Özet")
+    st.subheader("Günlük Genel Denge ve Öğünler")
 
     kilo_val = st.session_state.profil["mevcut_kilo"]
     boy_val = st.session_state.profil["boy"]
@@ -664,32 +734,44 @@ else:
 
     toplam_harcanan = bmr + pilates_kalori + yuruyus_kalori + adim_kalorisi
 
-    df_tum = (
-        pd.DataFrame(st.session_state.gunluk_kayitlar)
-        if st.session_state.gunluk_kayitlar
-        else pd.DataFrame()
-    )
-    if not df_tum.empty and "Tarih" in df_tum.columns:
-      df_bugun = df_tum[df_tum["Tarih"] == secilen_tarih]
-      toplam_alinan = df_bugun["Kalori"].sum() if not df_bugun.empty else 0.0
-      toplam_protein = df_bugun["Protein"].sum() if not df_bugun.empty else 0.0
-      toplam_karb = (
-          df_bugun["Karbonhidrat"].sum() if not df_bugun.empty else 0.0
-      )
-      toplam_yag = df_bugun["Yağ"].sum() if not df_bugun.empty else 0.0
+    # Günlük kayıtları listeleme ve silme (çöp kutusu özelliği)
+    bugun_kayitlari = [
+        (idx, item)
+        for idx, item in enumerate(st.session_state.gunluk_kayitlar)
+        if item.get("Tarih") == secilen_tarih
+    ]
 
-      st.dataframe(
-          df_bugun[[
-              "Öğün",
-              "Tarif",
-              "İçerik",
-              "Kalori",
-              "Protein",
-              "Karbonhidrat",
-              "Yağ",
-          ]],
-          use_container_width=True,
-      )
+    if bugun_kayitlari:
+      toplam_alinan = sum(item["Kalori"] for _, item in bugun_kayitlari)
+      toplam_protein = sum(item["Protein"] for _, item in bugun_kayitlari)
+      toplam_karb = sum(item["Karbonhidrat"] for _, item in bugun_kayitlari)
+      toplam_yag = sum(item["Yağ"] for _, item in bugun_kayitlari)
+
+      # Estetik Tablo ve Silme Butonları
+      for idx, item in bugun_kayitlari:
+        c_row1, c_row2, c_row3, c_row4, c_row5, c_row6 = st.columns(
+            [1.5, 2, 3.5, 1.2, 1.2, 0.6]
+        )
+        c_row1.markdown(f"**{item['Öğün']}**")
+        c_row2.markdown(f"{item['Tarif']}")
+        c_row3.markdown(
+            f"<span style='color: #a0aab8; font-size: 13px;'>{item['İçerik']}</span>",
+            unsafe_allow_html=True,
+        )
+        c_row4.markdown(f"🔥 {item['Kalori']} kcal")
+        c_row5.markdown(
+            f"P:{item['Protein']}g | K:{item['Karbonhidrat']}g"
+            f" | Y:{item['Yağ']}g"
+        )
+        if c_row6.button("🗑️", key=f"del_{idx}", help="Bu öğünü sil"):
+          st.session_state.gunluk_kayitlar.pop(idx)
+          verileri_kaydet(aktif_user)
+          st.rerun()
+        st.markdown(
+            "<hr style='margin: 4px 0px; border-color: rgba(72, 202, 228,"
+            " 0.15);'>",
+            unsafe_allow_html=True,
+        )
     else:
       toplam_alinan, toplam_protein, toplam_karb, toplam_yag = 0.0, 0.0, 0.0, 0.0
       st.info("Bugün için henüz öğün kaydı girilmedi.")
@@ -727,10 +809,10 @@ else:
       )
       haftalik_ozet = haftalik_ozet.sort_values("Tarih", ascending=False)
 
-      st.subheader("Gün Bazlı Geçmiş Dökümü")
+      st.subheader("📅 Gün Bazlı Geçmiş Dökümü")
       st.dataframe(haftalik_ozet, use_container_width=True)
 
-      st.subheader("Haftalık Kalori Trendi")
+      st.subheader("📈 Haftalık Kalori Trendi")
       st.line_chart(haftalik_ozet.set_index("Tarih")["Kalori"])
 
       ortalama_kalori = haftalik_ozet["Kalori"].mean()
@@ -788,11 +870,11 @@ else:
           st.warning("Lütfen geçerli bir malzeme adı girin.")
 
       st.markdown("---")
-      st.subheader("Mevcut Malzeme Listesi")
+      st.subheader("🥗 Mevcut Malzeme Listesi")
       df_malzeme = pd.DataFrame([
           {
-              "Malzeme Adı": k,
-              "Kalori (100g)": v["kalori"],
+              "Malzeme Adı": k.title(),
+              "Kalori (100g/ml)": v["kalori"],
               "Protein (g)": v["protein"],
               "Karb (g)": v["karb"],
               "Yağ (g)": v["yag"],
@@ -832,12 +914,16 @@ else:
           st.warning("Lütfen tarif adı yazın ve en az bir malzeme seçin.")
 
       st.markdown("---")
-      st.subheader("Kayıtlı Tarifleriniz")
+      st.subheader("📖 Kayıtlı Tarif Kütüphaneniz")
+      tarif_listesi_data = []
       for tarif_adi, icerik in st.session_state.hazir_tarifler.items():
         detay_str = ", ".join(
-            [f"{gr}g {malzeme}" for malzeme, gr in icerik.items()]
+            [f"{gr}g {malzeme.title()}" for malzeme, gr in icerik.items()]
         )
-        st.write(f"🔹 **{tarif_adi}**: {detay_str}")
+        tarif_listesi_data.append(
+            {"Tarif Adı": tarif_adi, "İçerik ve Gramajlar": detay_str}
+        )
+      st.dataframe(pd.DataFrame(tarif_listesi_data), use_container_width=True)
 
   # ----------------------------------------------------
   # HEDEF & KİLO ANALİZ SİHİRBAZI
