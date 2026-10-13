@@ -89,6 +89,32 @@ st.markdown(
         gap: 12px;
     }
 
+    .recipe-card {
+        background: linear-gradient(135deg, #1c2541 0%, #0b132b 100%);
+        border: 1px solid rgba(72, 202, 228, 0.3);
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        transition: 0.3s;
+    }
+    .recipe-card:hover {
+        border-color: #48cae4;
+        box-shadow: 0 6px 20px rgba(72, 202, 228, 0.2);
+    }
+    .recipe-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-style: italic;
+        font-size: 18px;
+        font-weight: 600;
+        color: #48cae4;
+        margin-bottom: 6px;
+    }
+    .recipe-details {
+        font-size: 13.5px;
+        color: #a0aab8;
+    }
+
     .stButton > button {
         background-color: #3a506b;
         color: #ffffff;
@@ -276,7 +302,6 @@ def verileri_yukle(username):
               "karb": 17.0,
               "yag": 54.0,
           },
-          # Kullanıcının Eklediği Yeni Lezzetler ve Tatlılar (100g/ml Başına)
           "kofte burger": {
               "kalori": 250,
               "protein": 12.0,
@@ -358,7 +383,6 @@ def verileri_yukle(username):
               "orman meyveleri": 50,
               "findik ezmesi": 15,
           },
-          # Kullanıcının İstediği Yeni Tarifler / Porsiyonlar
           "Standart Köfte Burger (1 Adet)": {"kofte burger": 200},
           "Tavuk Burger (1 Adet)": {"tavuk burger": 180},
           "Küçük Patates Kızartması": {"patates kizartmasi": 90},
@@ -387,6 +411,7 @@ def verileri_yukle(username):
           "hedef_protein": 90,
           "hedef_karb": 200,
           "hedef_yag": 60,
+          "setup_tamamlandi": False,  # İlk kayıt kontrolü için bayrak
       },
   }
 
@@ -399,6 +424,8 @@ def verileri_yukle(username):
           profil["mevcut_kilo"] = profil.get("kilo", 58.0)
         if "hedef_kilo" not in profil:
           profil["hedef_kilo"] = 55.0
+        if "setup_tamamlandi" not in profil:
+          profil["setup_tamamlandi"] = True
         data["profil"] = profil
 
         for k, v in default_data["besin_veritabani"].items():
@@ -536,6 +563,10 @@ else:
 
   st.sidebar.divider()
 
+  # İlk kez giriş yapan (setup_tamamlandi False olan) kullanıcılar için varsayılan menüyü sihirbaz yapıyoruz
+  is_first_login = not st.session_state.profil.get("setup_tamamlandi", True)
+  default_menu_index = 3 if is_first_login else 0
+
   menu = st.sidebar.selectbox(
       "Navigasyon Menüsü",
       [
@@ -544,7 +575,16 @@ else:
           "Tarif & Malzeme Yönetimi",
           "Hedef & Kilo Analiz Sihirbazı",
       ],
+      index=default_menu_index,
   )
+
+  # İlk giriş karşılayıcı banner
+  if is_first_login:
+    st.info(
+        "✨ **Nova'ya Hoş Geldin!** Yolculuğuna kusursuz başlayabilmek için"
+        " lütfen aşağıdaki **Hedef & Kilo Analiz Sihirbazı** ekranından"
+        " boyunu, kilonu, aktivite düzeyini ve hedeflerini belirle."
+    )
 
   # ----------------------------------------------------
   # GÜNLÜK TAKİP PANELİ
@@ -624,7 +664,7 @@ else:
       )
 
       # Apple Fitness Tarzı Dairesel Su Halkası Göstergesi
-      max_su = 3.0  # Hedef 3 Litre
+      max_su = 3.0
       su_oran = min(1.0, su_miktari / max_su)
       c_circumference = 2 * 3.14159 * 36
       c_offset = c_circumference * (1 - su_oran)
@@ -734,7 +774,6 @@ else:
 
     toplam_harcanan = bmr + pilates_kalori + yuruyus_kalori + adim_kalorisi
 
-    # Günlük kayıtları listeleme ve silme (çöp kutusu özelliği)
     bugun_kayitlari = [
         (idx, item)
         for idx, item in enumerate(st.session_state.gunluk_kayitlar)
@@ -747,7 +786,6 @@ else:
       toplam_karb = sum(item["Karbonhidrat"] for _, item in bugun_kayitlari)
       toplam_yag = sum(item["Yağ"] for _, item in bugun_kayitlari)
 
-      # Estetik Tablo ve Silme Butonları
       for idx, item in bugun_kayitlari:
         c_row1, c_row2, c_row3, c_row4, c_row5, c_row6 = st.columns(
             [1.5, 2, 3.5, 1.2, 1.2, 0.6]
@@ -812,20 +850,34 @@ else:
       st.subheader("📅 Gün Bazlı Geçmiş Dökümü")
       st.dataframe(haftalik_ozet, use_container_width=True)
 
-      st.subheader("📈 Haftalık Kalori Trendi")
-      st.line_chart(haftalik_ozet.set_index("Tarih")["Kalori"])
+      hedef_k = st.session_state.profil.get("hedef_kalori", 1800)
+      haftalik_ozet["Hedef Kalori"] = hedef_k
+
+      st.subheader("📊 Haftalık Alınan Kalori vs. Hedef Kalori Karşılaştırması")
+      chart_data = haftalik_ozet.set_index("Tarih")[["Kalori", "Hedef Kalori"]]
+      st.bar_chart(chart_data, color=["#48cae4", "#3a506b"])
 
       ortalama_kalori = haftalik_ozet["Kalori"].mean()
-      hedef_k = st.session_state.profil["hedef_kalori"]
 
       st.markdown(
           f"**Haftalık Ortalama Alınan Kalori:** {ortalama_kalori:.1f} kcal"
-          f" (Hedef: {hedef_k} kcal)"
+          f" (Sihirbaz Hedefiniz: {hedef_k} kcal)"
       )
-      if ortalama_kalori > hedef_k:
-        st.warning("Haftalık ortalamanız hedef kalorinin üzerinde.")
+      if ortalama_kalori > hedef_k + 50:
+        st.warning(
+            f"⚠️ Haftalık ortalamanız ({ortalama_kalori:.1f} kcal), hedef"
+            f" kalori aralığınızın ({hedef_k} kcal) üzerindedir."
+        )
+      elif ortalama_kalori < hedef_k - 100:
+        st.info(
+            f"💡 Haftalık ortalamanız ({ortalama_kalori:.1f} kcal), hedef"
+            f" kalorinizin ({hedef_k} kcal) altındadır."
+        )
       else:
-        st.success("Haftalık ortalamanız hedef aralığında.")
+        st.success(
+            f"✨ Mükemmel! Haftalık ortalamanız ({ortalama_kalori:.1f} kcal),"
+            f" hedef kalori aralığı ile tam uyumludur."
+        )
     else:
       st.info("Değerlendirme yapabilmek için günlük kayıtlar eklemelisiniz.")
 
@@ -836,7 +888,7 @@ else:
     st.header("Tarif ve Malzeme Yönetim Paneli")
 
     tab1, tab2 = st.tabs(
-        ["1. Yeni Malzeme Ekle", "2. Gramaj Esaslı Yeni Tarif Oluştur"]
+        ["1. Yeni Malzeme Ekle", "2. Gramaj Esaslı Estetik Tarif Kütüphanesi"]
     )
 
     with tab1:
@@ -914,16 +966,38 @@ else:
           st.warning("Lütfen tarif adı yazın ve en az bir malzeme seçin.")
 
       st.markdown("---")
-      st.subheader("📖 Kayıtlı Tarif Kütüphaneniz")
-      tarif_listesi_data = []
+      st.subheader("✨ Kayıtlı Tarifleriniz ve Lezzet Kartları")
+
+      # Estetik Kart Tasarımı ile Tarif Listeleme
       for tarif_adi, icerik in st.session_state.hazir_tarifler.items():
-        detay_str = ", ".join(
-            [f"{gr}g {malzeme.title()}" for malzeme, gr in icerik.items()]
+        t_kal, t_pro, t_kar, t_yag = 0, 0, 0, 0
+        detay_listesi = []
+        for m, gr in icerik.items():
+          detay_listesi.append(f"{gr}g {m.title()}")
+          if m in st.session_state.besin_veritabani:
+            b = st.session_state.besin_veritabani[m]
+            oran = gr / 100.0
+            t_kal += b["kalori"] * oran
+            t_pro += b["protein"] * oran
+            t_kar += b["karb"] * oran
+            t_yag += b["yag"] * oran
+
+        detay_str = ", ".join(detay_listesi)
+        st.markdown(
+            f"""
+            <div class="recipe-card">
+                <div class="recipe-title">🔹 {tarif_adi}</div>
+                <div class="recipe-details"><strong>İçerik:</strong> {detay_str}</div>
+                <div style="margin-top: 8px; font-size: 13px; color: #ffffff;">
+                    🔥 <strong>{t_kal:.1f} kcal</strong> &nbsp;|&nbsp; 
+                    P: <strong>{t_pro:.1f}g</strong> &nbsp;|&nbsp; 
+                    K: <strong>{t_kar:.1f}g</strong> &nbsp;|&nbsp; 
+                    Y: <strong>{t_yag:.1f}g</strong>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
-        tarif_listesi_data.append(
-            {"Tarif Adı": tarif_adi, "İçerik ve Gramajlar": detay_str}
-        )
-      st.dataframe(pd.DataFrame(tarif_listesi_data), use_container_width=True)
 
   # ----------------------------------------------------
   # HEDEF & KİLO ANALİZ SİHİRBAZI
@@ -993,6 +1067,7 @@ else:
       st.session_state.profil["boy"] = boy
       st.session_state.profil["mevcut_kilo"] = mevcut_kilo
       st.session_state.profil["hedef_kilo"] = hedef_kilo
+      st.session_state.profil["setup_tamamlandi"] = True
 
       if kilo_farki > 0:
         hedef_kalori = tdee - 500
@@ -1002,7 +1077,10 @@ else:
         tahmini_gun = toplam_yakilacak_yag_kcal / 500
         tahmini_hafta = tahmini_gun / 7
 
-        st.success("Hedefleriniz başarıyla hesaplandı ve kaydedildi!")
+        st.success(
+            "Hedefleriniz başarıyla hesaplandı, kaydedildi ve ilk kurulum"
+            " tamamlandı!"
+        )
         st.markdown("---")
         st.subheader("📊 Analiz ve Tahmin Sonuçları")
         st.metric("Mevcut Kilo", f"{mevcut_kilo} kg")
@@ -1030,7 +1108,10 @@ else:
         tahmini_gun = abs(kilo_farki * 7700) / 300
         tahmini_hafta = tahmini_gun / 7
 
-        st.success("Hedefleriniz başarıyla hesaplandı ve kaydedildi!")
+        st.success(
+            "Hedefleriniz başarıyla hesaplandı, kaydedildi ve ilk kurulum"
+            " tamamlandı!"
+        )
         st.markdown("---")
         st.subheader("📊 Analiz ve Tahmin Sonuçları")
         st.metric("Mevcut Kilo", f"{mevcut_kilo} kg")
@@ -1050,6 +1131,7 @@ else:
         )
       else:
         st.session_state.profil["hedef_kalori"] = round(tdee)
+        st.session_state.profil["setup_tamamlandi"] = True
         st.success(
             "Mevcut kilonuz ve hedef kilonuz aynı! Kilonuzu korumak için"
             " günlük kalori hedefiniz TDEE ile aynı ayarlandı."
