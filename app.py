@@ -1,3 +1,4 @@
+import base64
 import datetime
 import hashlib
 import json
@@ -137,13 +138,16 @@ st.markdown(
 USERS_FILE = "kullanicilar.json"
 AMBLEM_PATH = "watermarked_img_10875607693201107735.jpg"
 
-# Gönderdiğin Kuğu Görselinin Doğrudan Entegre Edilmiş Hali
-SWAN_SVG_OR_IMG = '<span style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; vertical-align: middle; margin: 0 -4px; background-color: transparent;"><svg viewBox="0 0 24 24" style="width: 100%; height: 100%; fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round;"><path d="M19 15c0 1.657-1.343 3-3 3H8c-2.209 0-4-1.791-4-4 0-1.5 1-2.8 2.5-3.5C8.2 8.5 9 6.5 9 5c0-1.657 1.343-3 3-3s3 1.343 3 3v2.5c2.5 1 4 2.5 4 4.5.5 1.2.5 2.5 1 3z"/><path d="M12 5c-.4 1-1.2 2-2 2.5"/><path d="M14.5 10.5c.8.5 1.5 1.3 2 2.2"/></svg></span>'
+# Gönderdiğin Orijinal Kuğu Görselinin Base64 Karşılığı
+with open('input_file_2.png', 'rb') as f:
+  original_swan_b64 = base64.b64encode(f.read()).decode('utf-8')
+
+SWAN_IMG_TAG = f'<img src="data:image/png;base64,{original_swan_b64}" style="height: 48px; width: auto; vertical-align: middle; margin: 0 -4px; object-fit: contain;">'
 
 LOGO_MAIN = f"""
 <div style="display: flex; align-items: center; justify-content: center; gap: 4px; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 42px; font-weight: 700; color: #ffffff;">
     <span>N</span>
-    {SWAN_SVG_OR_IMG}
+    {SWAN_IMG_TAG}
     <span>V</span>
     <span>A</span>
 </div>
@@ -152,7 +156,7 @@ LOGO_MAIN = f"""
 LOGO_SIDEBAR = f"""
 <div style="display: flex; align-items: center; justify-content: center; gap: 4px; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 36px; font-weight: 700; color: #ffffff; margin-top: 10px; margin-bottom: 20px;">
     <span>N</span>
-    {SWAN_SVG_OR_IMG}
+    {SWAN_IMG_TAG}
     <span>V</span>
     <span>A</span>
 </div>
