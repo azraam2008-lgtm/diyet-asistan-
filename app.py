@@ -2,8 +2,17 @@ import datetime
 import hashlib
 import json
 import os
+import subprocess
+import sys
+
+# Plotly otomatik kontrol ve yükleme (Eksikse yükler, uygulamayı çökertmez)
+try:
+  import plotly.express as px
+except ImportError:
+  subprocess.check_call([sys.executable, "-m", "pip", "install", "plotly"])
+  import plotly.express as px
+
 import pandas as pd
-import plotly.express as px
 import streamlit as st
 
 st.set_page_config(
@@ -659,7 +668,7 @@ else:
           step=500,
       )
 
-      # Slider yerine doğrudan Ring üzerinden İnteraktif Su Kontrolü
+      # Slider tamamen kaldırıldı, Ring üzerinden İnteraktif Su Kontrolü
       su_miktari = curr_aktivite["su"]
 
       st.markdown(
@@ -671,7 +680,7 @@ else:
 
       max_su = 3.0
       su_oran = min(1.0, su_miktari / max_su)
-      c_circumference = 2 * 3.14159 * 36
+      c_circumference = 2 * 3.14159 * 38
       c_offset = c_circumference * (1 - su_oran)
 
       st.markdown(
@@ -692,7 +701,6 @@ else:
           unsafe_allow_html=True,
       )
 
-      # Ring üzerinden su ekleme / azaltma düğmeleri
       c_s1, c_s2, c_s3, c_s4 = st.columns(4)
       if c_s1.button("-0.5L", key="su_az_05"):
         if su_miktari >= 0.5:
@@ -965,7 +973,7 @@ else:
   # TARİF & MALZEME YÖNETİMİ
   # ----------------------------------------------------
   elif menu == "Tarif & Malzeme Yönetimi":
-    st.header("Tarif ve Malzeme Yönetim Paneli")
+    st.header("Tarif and Malzeme Yönetim Paneli")
 
     tab1, tab2 = st.tabs(
         ["1. Yeni Malzeme Ekle", "2. Gramaj Esaslı Estetik Tarif Kütüphanesi"]
