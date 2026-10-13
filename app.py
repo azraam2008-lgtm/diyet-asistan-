@@ -3,6 +3,7 @@ import hashlib
 import json
 import os
 import pandas as pd
+import plotly.express as px
 import streamlit as st
 
 st.set_page_config(
@@ -411,7 +412,7 @@ def verileri_yukle(username):
           "hedef_protein": 90,
           "hedef_karb": 200,
           "hedef_yag": 60,
-          "setup_tamamlandi": False,  # İlk kayıt kontrolü için bayrak
+          "setup_tamamlandi": False,
       },
   }
 
@@ -563,7 +564,6 @@ else:
 
   st.sidebar.divider()
 
-  # İlk kez giriş yapan (setup_tamamlandi False olan) kullanıcılar için varsayılan menüyü sihirbaz yapıyoruz
   is_first_login = not st.session_state.profil.get("setup_tamamlandi", True)
   default_menu_index = 3 if is_first_login else 0
 
@@ -578,7 +578,6 @@ else:
       index=default_menu_index,
   )
 
-  # İlk giriş karşılayıcı banner
   if is_first_login:
     st.info(
         "✨ **Nova'ya Hoş Geldin!** Yolculuğuna kusursuz başlayabilmek için"
@@ -659,11 +658,17 @@ else:
           value=int(curr_aktivite["adim"]),
           step=500,
       )
-      su_miktari = st.slider(
-          "Su Tüketimi (Litre)", 0.0, 5.0, float(curr_aktivite["su"]), 0.5
+
+      # Slider yerine doğrudan Ring üzerinden İnteraktif Su Kontrolü
+      su_miktari = curr_aktivite["su"]
+
+      st.markdown(
+          "<div style='text-align: center; font-family: \"Playfair"
+          " Display\"; font-style: italic; color: #48cae4; font-size: 15px;"
+          " margin-top: 10px; margin-bottom: 2px;'>Su Tüketim Halkası</div>",
+          unsafe_allow_html=True,
       )
 
-      # Apple Fitness Tarzı Dairesel Su Halkası Göstergesi
       max_su = 3.0
       su_oran = min(1.0, su_miktari / max_su)
       c_circumference = 2 * 3.14159 * 36
@@ -671,21 +676,46 @@ else:
 
       st.markdown(
           f"""
-            <div style="display: flex; align-items: center; justify-content: center; margin: 10px 0;">
-                <div style="position: relative; width: 90px; height: 90px;">
-                    <svg width="90" height="90" style="transform: rotate(-90deg);">
-                        <circle cx="45" cy="45" r="36" stroke="#1c2541" stroke-width="8" fill="transparent"/>
-                        <circle cx="45" cy="45" r="36" stroke="#48cae4" stroke-width="8" stroke-dasharray="{c_circumference}" stroke-dashoffset="{c_offset}" stroke-linecap="round" fill="transparent"/>
+            <div style="display: flex; align-items: center; justify-content: center; margin: 5px 0 10px 0;">
+                <div style="position: relative; width: 100px; height: 100px;">
+                    <svg width="100" height="100" style="transform: rotate(-90deg);">
+                        <circle cx="50" cy="50" r="38" stroke="#1c2541" stroke-width="8" fill="transparent"/>
+                        <circle cx="50" cy="50" r="38" stroke="#48cae4" stroke-width="8" stroke-dasharray="{c_circumference}" stroke-dashoffset="{c_offset}" stroke-linecap="round" fill="transparent"/>
                     </svg>
                     <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Plus Jakarta Sans', sans-serif;">
-                        <span style="font-size: 16px; font-weight: 700; color: #ffffff;">{su_miktari}L</span>
-                        <span style="font-size: 10px; color: #a0aab8;">SU RİNGİ</span>
+                        <span style="font-size: 18px; font-weight: 700; color: #ffffff;">{su_miktari:.1f}L</span>
+                        <span style="font-size: 9px; color: #a0aab8; letter-spacing: 1px;">SU RİNGİ</span>
                     </div>
                 </div>
             </div>
             """,
           unsafe_allow_html=True,
       )
+
+      # Ring üzerinden su ekleme / azaltma düğmeleri
+      c_s1, c_s2, c_s3, c_s4 = st.columns(4)
+      if c_s1.button("-0.5L", key="su_az_05"):
+        if su_miktari >= 0.5:
+          su_miktari = round(su_miktari - 0.5, 1)
+          curr_aktivite["su"] = su_miktari
+          verileri_kaydet(aktif_user)
+          st.rerun()
+      if c_s2.button("-0.25L", key="su_az_025"):
+        if su_miktari >= 0.25:
+          su_miktari = round(su_miktari - 0.25, 2)
+          curr_aktivite["su"] = su_miktari
+          verileri_kaydet(aktif_user)
+          st.rerun()
+      if c_s3.button("+0.25L", key="su_art_025"):
+        su_miktari = round(su_miktari + 0.25, 2)
+        curr_aktivite["su"] = su_miktari
+        verileri_kaydet(aktif_user)
+        st.rerun()
+      if c_s4.button("+0.5L", key="su_art_05"):
+        su_miktari = round(su_miktari + 0.5, 1)
+        curr_aktivite["su"] = su_miktari
+        verileri_kaydet(aktif_user)
+        st.rerun()
 
       pilates_secenekleri = [
           "Mat Pilates",
@@ -786,30 +816,42 @@ else:
       toplam_karb = sum(item["Karbonhidrat"] for _, item in bugun_kayitlari)
       toplam_yag = sum(item["Yağ"] for _, item in bugun_kayitlari)
 
+      st.markdown(
+          "<h4 style='font-family: \"Playfair Display\"; font-style: italic;"
+          " color: #ffffff; margin-top: 15px;'>Bugünkü Eklenen Öğünler</h4>",
+          unsafe_allow_html=True,
+      )
+
+      # Estetik Kart Tasarımı ile Günlük Öğün Listeleme & Silme
       for idx, item in bugun_kayitlari:
-        c_row1, c_row2, c_row3, c_row4, c_row5, c_row6 = st.columns(
-            [1.5, 2, 3.5, 1.2, 1.2, 0.6]
-        )
-        c_row1.markdown(f"**{item['Öğün']}**")
-        c_row2.markdown(f"{item['Tarif']}")
-        c_row3.markdown(
-            f"<span style='color: #a0aab8; font-size: 13px;'>{item['İçerik']}</span>",
-            unsafe_allow_html=True,
-        )
-        c_row4.markdown(f"🔥 {item['Kalori']} kcal")
-        c_row5.markdown(
-            f"P:{item['Protein']}g | K:{item['Karbonhidrat']}g"
-            f" | Y:{item['Yağ']}g"
-        )
-        if c_row6.button("🗑️", key=f"del_{idx}", help="Bu öğünü sil"):
-          st.session_state.gunluk_kayitlar.pop(idx)
-          verileri_kaydet(aktif_user)
-          st.rerun()
-        st.markdown(
-            "<hr style='margin: 4px 0px; border-color: rgba(72, 202, 228,"
-            " 0.15);'>",
-            unsafe_allow_html=True,
-        )
+        col_card, col_btn = st.columns([12, 1])
+        with col_card:
+          st.markdown(
+              f"""
+                <div style="background: linear-gradient(135deg, #1c2541 0%, #0b132b 100%); border: 1px solid rgba(72, 202, 228, 0.25); border-radius: 10px; padding: 12px 18px; margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                        <div>
+                            <span style="background: #3a506b; color: #48cae4; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">{item['Öğün']}</span>
+                            <strong style="color: #ffffff; margin-left: 8px; font-size: 15px;">{item['Tarif']}</strong>
+                        </div>
+                        <div style="font-size: 13px;">
+                            <span style="color: #48cae4; font-weight: 600;">🔥 {item['Kalori']} kcal</span> &nbsp;|&nbsp; 
+                            <span style="color: #a0aab8;">P: {item['Protein']}g &nbsp;|&nbsp; K: {item['Karbonhidrat']}g &nbsp;|&nbsp; Y: {item['Yağ']}g</span>
+                        </div>
+                    </div>
+                    <div style="font-size: 13px; color: #a0aab8; margin-top: 6px;">
+                        <strong>İçerik:</strong> {item['İçerik']}
+                    </div>
+                </div>
+                """,
+              unsafe_allow_html=True,
+          )
+        with col_btn:
+          st.write("")
+          if st.button("🗑️", key=f"del_{idx}", help="Bu öğünü sil"):
+            st.session_state.gunluk_kayitlar.pop(idx)
+            verileri_kaydet(aktif_user)
+            st.rerun()
     else:
       toplam_alinan, toplam_protein, toplam_karb, toplam_yag = 0.0, 0.0, 0.0, 0.0
       st.info("Bugün için henüz öğün kaydı girilmedi.")
@@ -845,17 +887,55 @@ else:
           .sum()
           .reset_index()
       )
-      haftalik_ozet = haftalik_ozet.sort_values("Tarih", ascending=False)
+      haftalik_ozet = haftalik_ozet.sort_values("Tarih")
 
       st.subheader("📅 Gün Bazlı Geçmiş Dökümü")
       st.dataframe(haftalik_ozet, use_container_width=True)
 
       hedef_k = st.session_state.profil.get("hedef_kalori", 1800)
       haftalik_ozet["Hedef Kalori"] = hedef_k
+      haftalik_ozet["Fark"] = haftalik_ozet["Kalori"] - haftalik_ozet["Hedef Kalori"]
 
-      st.subheader("📊 Haftalık Alınan Kalori vs. Hedef Kalori Karşılaştırması")
-      chart_data = haftalik_ozet.set_index("Tarih")[["Kalori", "Hedef Kalori"]]
-      st.bar_chart(chart_data, color=["#48cae4", "#3a506b"])
+      st.subheader("📊 İnteraktif Haftalık Alınan Kalori Analizi")
+      st.markdown(
+          "<span style='color: #a0aab8; font-size: 13.5px;'>Grafiğin üzerine"
+          " dokunarak veya imleci yaklaştırarak aldığın kaloriyi, hedef"
+          " kaloriyi ve aralarındaki farkı inceleyebilirsin.</span>",
+          unsafe_allow_html=True,
+      )
+
+      # Yalnızca alınan kaloriyi gösteren, üzerine gelince hedefi ve farkı gösteren Plotly interaktif grafik
+      fig = px.line(
+          haftalik_ozet,
+          x="Tarih",
+          y="Kalori",
+          markers=True,
+          labels={"Kalori": "Alınan Kalori (kcal)", "Tarih": "Tarih"},
+      )
+      fig.update_traces(
+          line_color="#48cae4",
+          line_width=3,
+          marker=dict(size=10, color="#48cae4"),
+          hoovertemplate=(
+              "<b>Tarih:</b> %{x}<br><b>Alınan Kalori:</b> %{y:.1f}"
+              " kcal<br><b>Hedef Kalori:</b> %{customdata[0]} kcal<br><b>Fark:"
+              "</b> %{customdata[1]:+.1f} kcal<extra></extra>"
+          ),
+          customdata=haftalik_ozet[["Hedef Kalori", "Fark"]].values,
+      )
+      fig.update_layout(
+          paper_bgcolor="rgba(0,0,0,0)",
+          plot_bgcolor="rgba(0,0,0,0)",
+          font=dict(color="#e0e1dd", family="Plus Jakarta Sans"),
+          xaxis=dict(showgrid=False, zeroline=False, color="#a0aab8"),
+          yaxis=dict(
+              showgrid=True,
+              gridcolor="rgba(72, 202, 228, 0.15)",
+              color="#a0aab8",
+          ),
+          hovermode="x unified",
+      )
+      st.plotly_chart(fig, use_container_width=True)
 
       ortalama_kalori = haftalik_ozet["Kalori"].mean()
 
@@ -968,7 +1048,6 @@ else:
       st.markdown("---")
       st.subheader("✨ Kayıtlı Tarifleriniz ve Lezzet Kartları")
 
-      # Estetik Kart Tasarımı ile Tarif Listeleme
       for tarif_adi, icerik in st.session_state.hazir_tarifler.items():
         t_kal, t_pro, t_kar, t_yag = 0, 0, 0, 0
         detay_listesi = []
