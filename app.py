@@ -12,7 +12,7 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------
-# GENEL STİLLER (Glassmorphism & Temel Tema)
+# TEMEL STİLLER
 # ----------------------------------------------------
 st.markdown(
     """
@@ -126,14 +126,19 @@ st.markdown(
 USERS_FILE = "kullanicilar.json"
 AMBLEM_PATH = "watermarked_img_10875607693201107735.jpg"
 
-# "O" Harfi Yerine Geçecek Şeffaf Kuğu SVG Bileşeni
-SWAN_HTML = """
-<span style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; vertical-align: middle; margin: 0 -2px;">
-    <svg viewBox="0 0 24 24" style="width: 100%; height: 100%; fill: none; stroke: #ffffff; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4);">
-        <path d="M19 15c0 1.657-1.343 3-3 3H8c-2.209 0-4-1.791-4-4 0-1.5 1-2.8 2.5-3.5C8.2 8.5 9 6.5 9 5c0-1.657 1.343-3 3-3s3 1.343 3 3v2.5c2.5 1 4 2.5 4 4.5.5 1.2.5 2.5 1 3z"/>
-        <path d="M12 5c-.4 1-1.2 2-2 2.5"/>
-    </svg>
-</span>
+# "O" Harfi Yerine Doğrudan Kuğu Simgesi (SVG)
+LOGO_HTML = """
+<div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 40px; font-weight: 700; color: #ffffff;">
+    <span>N</span>
+    <span style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; vertical-align: middle; margin: 0 -2px;">
+        <svg viewBox="0 0 24 24" style="width: 100%; height: 100%; fill: none; stroke: #ffffff; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;">
+            <path d="M19 15c0 1.657-1.343 3-3 3H8c-2.209 0-4-1.791-4-4 0-1.5 1-2.8 2.5-3.5C8.2 8.5 9 6.5 9 5c0-1.657 1.343-3 3-3s3 1.343 3 3v2.5c2.5 1 4 2.5 4 4.5.5 1.2.5 2.5 1 3z"/>
+            <path d="M12 5c-.4 1-1.2 2-2 2.5"/>
+        </svg>
+    </span>
+    <span>V</span>
+    <span>A</span>
+</div>
 """
 
 
@@ -363,7 +368,7 @@ def verileri_kaydet(username):
 
 
 # ----------------------------------------------------
-# 1. OTURUM KONTROLÜ VE GİRİŞ / KAYIT EKRANI (LANDING PAGE)
+# 1. OTURUM KONTROLÜ VE GİRİŞ / KAYIT EKRANI
 # ----------------------------------------------------
 if "giris_yapildi" not in st.session_state:
   st.session_state.giris_yapildi = False
@@ -379,13 +384,8 @@ if not st.session_state.giris_yapildi:
   st.markdown(
       f"""
       <div style="max-width: 740px; margin: 0 auto; padding: 0px 15px; margin-bottom: 5px;">
-          <div style="display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 42px; font-weight: 700; color: #ffffff; margin-bottom: 10px;">
-              <span>N</span>
-              {SWAN_HTML}
-              <span>V</span>
-              <span>A</span>
-          </div>
-          <p style="font-size: 13px; line-height: 1.7; color: #9da8b5; font-family: 'Playfair Display', Georgia, serif; font-style: italic; text-align: justify; font-weight: 400; margin: 0;">
+          {LOGO_HTML}
+          <p style="font-size: 13px; line-height: 1.7; color: #9da8b5; font-family: 'Playfair Display', Georgia, serif; font-style: italic; text-align: justify; font-weight: 400; margin-top: 15px;">
               Gökyüzünün derinliklerinde aniden parlayan bir yıldız gibidir dönüşüm... Karanlık suları aşan bir kuğunun asil zarafeti, pırlanta gibi parlayan yeni bir yaşam iradesiyle buluşur. Nova; kendi potansiyeline uyanmak, bedenine hak ettiği değeri vermek ve her gün biraz daha parlayarak kendi en büyüleyici versiyonunu baştan yaratmak isteyenlerin sığınağıdır. Işıltınla parlamaya hazır mısın?
           </p>
       </div>
@@ -446,24 +446,12 @@ if not st.session_state.giris_yapildi:
 
 else:
   # ----------------------------------------------------
-  # 2. ANA UYGULAMA PANELİ (Giriş Yapılmış Halde)
+  # 2. ANA UYGULAMA PANELİ
   # ----------------------------------------------------
   aktif_user = st.session_state.aktif_kullanici
 
-  # Sidebar N[Kuğu]VA Başlığı
-  st.sidebar.markdown(
-      f"""
-      <div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 38px; font-weight: 700; color: #ffffff; margin-top: 10px; margin-bottom: 20px;">
-          <span>N</span>
-          {SWAN_HTML}
-          <span>V</span>
-          <span>A</span>
-      </div>
-  """,
-      unsafe_allow_html=True,
-  )
+  st.sidebar.markdown(LOGO_HTML, unsafe_allow_html=True)
 
-  # Ortalanmış Kuğu Amblemi ve Kullanıcı Adı
   c_mid1, c_mid2, c_mid3 = st.sidebar.columns([1, 1.2, 1])
   with c_mid2:
     if os.path.exists(AMBLEM_PATH):
