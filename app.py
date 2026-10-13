@@ -1,4 +1,3 @@
-import base64
 import datetime
 import hashlib
 import json
@@ -137,15 +136,9 @@ st.markdown(
 
 USERS_FILE = "kullanicilar.json"
 AMBLEM_PATH = "watermarked_img_10875607693201107735.jpg"
-KUGU_IMG_PATH = "kugu.png"
 
-# Kuğu Görselini Güvenli Şekilde Yükleme (Hata Vermez)
-if os.path.exists(KUGU_IMG_PATH):
-  with open(KUGU_IMG_PATH, "rb") as f:
-    swan_b64 = base64.b64encode(f.read()).decode("utf-8")
-  SWAN_IMG_TAG = f'<img src="data:image/png;base64,{swan_b64}" style="height: 48px; width: auto; vertical-align: middle; margin: 0 -4px; object-fit: contain;">'
-else:
-  SWAN_IMG_TAG = '<span style="color: #48cae4;">🦢</span>'
+# Gönderdiğin Orijinal Kuğu Görselinin Kod İçine Gömülü Hali (Harici Dosya Gerektirmez)
+SWAN_IMG_TAG = f'<img src="data:image/png;base64,{b64_str}" style="height: 48px; width: auto; vertical-align: middle; margin: 0 -4px; object-fit: contain;">'
 
 LOGO_MAIN = f"""
 <div style="display: flex; align-items: center; justify-content: center; gap: 4px; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 42px; font-weight: 700; color: #ffffff;">
