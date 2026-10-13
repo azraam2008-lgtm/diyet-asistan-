@@ -119,7 +119,6 @@ st.markdown(
         margin-bottom: 5px;
     }
 
-    /* Giriş Sayfası Küçük ve Zarif İtalik Yazı Stili */
     .landing-subtext {
         font-family: 'Playfair Display', Georgia, serif;
         font-style: italic;
@@ -138,33 +137,22 @@ st.markdown(
 USERS_FILE = "kullanicilar.json"
 AMBLEM_PATH = "watermarked_img_10875607693201107735.jpg"
 
-# ----------------------------------------------------
-# AÇIK KIVRIK BOYUNLU KUSURSUZ KUĞU LOGOSU (N[Kuğu]VA)
-# ----------------------------------------------------
-LOGO_MAIN = """
+# Gönderdiğin Kuğu Görselinin Doğrudan Entegre Edilmiş Hali
+SWAN_SVG_OR_IMG = '<span style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; vertical-align: middle; margin: 0 -4px; background-color: transparent;"><svg viewBox="0 0 24 24" style="width: 100%; height: 100%; fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round;"><path d="M19 15c0 1.657-1.343 3-3 3H8c-2.209 0-4-1.791-4-4 0-1.5 1-2.8 2.5-3.5C8.2 8.5 9 6.5 9 5c0-1.657 1.343-3 3-3s3 1.343 3 3v2.5c2.5 1 4 2.5 4 4.5.5 1.2.5 2.5 1 3z"/><path d="M12 5c-.4 1-1.2 2-2 2.5"/><path d="M14.5 10.5c.8.5 1.5 1.3 2 2.2"/></svg></span>'
+
+LOGO_MAIN = f"""
 <div style="display: flex; align-items: center; justify-content: center; gap: 4px; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 42px; font-weight: 700; color: #ffffff;">
     <span>N</span>
-    <span style="display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; margin: 0 -2px;">
-        <svg viewBox="0 0 24 24" style="width: 100%; height: 100%; fill: none; stroke: #ffffff; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round;">
-            <!-- Zarif Kuğu Kıvrımı -->
-            <path d="M22 17c0 2.2-1.8 4-4 4H6c-2.2 0-4-1.8-4-4 0-1.8 1.2-3.3 2.8-3.8.7-.2 1.2-1 1.2-1.8v-1c0-1.1.9-2 2-2s2 .9 2 2v1c0 1 .8 1.8 1.8 2 1.6.5 2.8 2 2.8 3.8z"></path>
-            <path d="M12 5c-.5 1-1.5 2-2.5 2.5"></path>
-        </svg>
-    </span>
+    {SWAN_SVG_OR_IMG}
     <span>V</span>
     <span>A</span>
 </div>
 """
 
-LOGO_SIDEBAR = """
+LOGO_SIDEBAR = f"""
 <div style="display: flex; align-items: center; justify-content: center; gap: 4px; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 36px; font-weight: 700; color: #ffffff; margin-top: 10px; margin-bottom: 20px;">
     <span>N</span>
-    <span style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; margin: 0 -2px;">
-        <svg viewBox="0 0 24 24" style="width: 100%; height: 100%; fill: none; stroke: #ffffff; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round;">
-            <path d="M22 17c0 2.2-1.8 4-4 4H6c-2.2 0-4-1.8-4-4 0-1.8 1.2-3.3 2.8-3.8.7-.2 1.2-1 1.2-1.8v-1c0-1.1.9-2 2-2s2 .9 2 2v1c0 1 .8 1.8 1.8 2 1.6.5 2.8 2 2.8 3.8z"></path>
-            <path d="M12 5c-.5 1-1.5 2-2.5 2.5"></path>
-        </svg>
-    </span>
+    {SWAN_SVG_OR_IMG}
     <span>V</span>
     <span>A</span>
 </div>
@@ -410,7 +398,6 @@ if not st.session_state.giris_yapildi:
     if os.path.exists(AMBLEM_PATH):
       st.image(AMBLEM_PATH, use_container_width=True)
 
-  # Başlık ve Açıklama Yazısı
   st.markdown(
       '<div style="max-width: 740px; margin: 0 auto; padding: 0px 15px;'
       ' margin-bottom: 5px;">'
@@ -478,7 +465,7 @@ if not st.session_state.giris_yapildi:
 
 else:
   # ----------------------------------------------------
-  # 2. ANA UYGULAMA PANELİ (Giriş Yapılmış Halde)
+  # 2. ANA UYGULAMA PANELİ
   # ----------------------------------------------------
   aktif_user = st.session_state.aktif_kullanici
 
