@@ -767,7 +767,7 @@ else:
         st.success("Aktivite bilgileri kaydedildi.")
 
     st.markdown("---")
-    st.subheader("Günlük Genel Denge ve Öğünler")
+    st.subheader(f"✨ {secilen_tarih} Tarihli Öğünler ve Denge")
 
     kilo_val = st.session_state.profil["mevcut_kilo"]
     boy_val = st.session_state.profil["boy"]
@@ -814,29 +814,64 @@ else:
       toplam_yag = sum(item["Yağ"] for _, item in bugun_kayitlari)
 
       st.markdown(
-          "<h4 style='font-family: \"Playfair Display\"; font-style: italic;"
-          " color: #ffffff; margin-top: 15px;'>Bugünkü Eklenen Öğünler</h4>",
+          "<div style='margin-bottom: 12px; font-style: italic; color:"
+          " #a0aab8; font-size: 14px;'>Seçilen tarihe ait kayıtlı öğünleriniz"
+          " aşağıda renkli kartlar halinde listelenmektedir:</div>",
           unsafe_allow_html=True,
       )
 
+      # Öğün türüne göre özel neon/pastel renk temaları
+      ogun_renkleri = {
+          "Kahvaltı": {
+              "bg": "linear-gradient(135deg, rgba(28, 37, 65, 0.95) 0%, rgba(72, 202, 228, 0.15) 100%)",
+              "border": "#48cae4",
+              "badge": "#48cae4",
+          },
+          "Öğle Yemeği": {
+              "bg": "linear-gradient(135deg, rgba(28, 37, 65, 0.95) 0%, rgba(144, 224, 239, 0.15) 100%)",
+              "border": "#90e0ef",
+              "badge": "#90e0ef",
+          },
+          "Akşam Yemeği": {
+              "bg": "linear-gradient(135deg, rgba(28, 37, 65, 0.95) 0%, rgba(0, 150, 199, 0.15) 100%)",
+              "border": "#0096c7",
+              "badge": "#0096c7",
+          },
+          "Ara Öğün": {
+              "bg": "linear-gradient(135deg, rgba(28, 37, 65, 0.95) 0%, rgba(202, 240, 248, 0.15) 100%)",
+              "border": "#caf0f8",
+              "badge": "#caf0f8",
+          },
+      }
+
       for idx, item in bugun_kayitlari:
+        o_turu = item.get("Öğün", "Ara Öğün")
+        tema = ogun_renkleri.get(
+            o_turu,
+            {
+                "bg": "linear-gradient(135deg, #1c2541 0%, #0b132b 100%)",
+                "border": "#48cae4",
+                "badge": "#48cae4",
+            },
+        )
+
         col_card, col_btn = st.columns([12, 1])
         with col_card:
           st.markdown(
               f"""
-                <div style="background: linear-gradient(135deg, #1c2541 0%, #0b132b 100%); border: 1px solid rgba(72, 202, 228, 0.25); border-radius: 10px; padding: 12px 18px; margin-bottom: 8px;">
+                <div style="background: {tema['bg']}; border: 1px solid {tema['border']}; border-left: 5px solid {tema['badge']}; border-radius: 12px; padding: 16px 20px; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: 0.3s;">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
                         <div>
-                            <span style="background: #3a506b; color: #48cae4; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">{item['Öğün']}</span>
-                            <strong style="color: #ffffff; margin-left: 8px; font-size: 15px;">{item['Tarif']}</strong>
+                            <span style="background-color: {tema['badge']}; color: #0b132b; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">{o_turu}</span>
+                            <strong style="color: #ffffff; margin-left: 10px; font-size: 17px; font-family: 'Playfair Display', Georgia, serif; font-style: italic;">{item['Tarif']}</strong>
                         </div>
-                        <div style="font-size: 13px;">
-                            <span style="color: #48cae4; font-weight: 600;">🔥 {item['Kalori']} kcal</span> &nbsp;|&nbsp; 
-                            <span style="color: #a0aab8;">P: {item['Protein']}g &nbsp;|&nbsp; K: {item['Karbonhidrat']}g &nbsp;|&nbsp; Y: {item['Yağ']}g</span>
+                        <div style="font-size: 14px;">
+                            <span style="color: #48cae4; font-weight: 700;">🔥 {item['Kalori']} kcal</span> &nbsp;|&nbsp; 
+                            <span style="color: #a0aab8;">P: <strong>{item['Protein']}g</strong> &nbsp;|&nbsp; K: <strong>{item['Karbonhidrat']}g</strong> &nbsp;|&nbsp; Y: <strong>{item['Yağ']}g</strong></span>
                         </div>
                     </div>
-                    <div style="font-size: 13px; color: #a0aab8; margin-top: 6px;">
-                        <strong>İçerik:</strong> {item['İçerik']}
+                    <div style="font-size: 13.5px; color: #cbd5e1; margin-top: 8px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px;">
+                        🥗 <strong>İçerik:</strong> {item['İçerik']}
                     </div>
                 </div>
                 """,
@@ -850,7 +885,9 @@ else:
             st.rerun()
     else:
       toplam_alinan, toplam_protein, toplam_karb, toplam_yag = 0.0, 0.0, 0.0, 0.0
-      st.info("Bugün için henüz öğün kaydı girilmedi.")
+      st.info(
+          f"📅 {secilen_tarih} tarihinde henüz kaydedilmiş bir öğün bulunmuyor."
+      )
 
     net_fark = toplam_alinan - toplam_harcanan
 
@@ -902,7 +939,6 @@ else:
           unsafe_allow_html=True,
       )
 
-      # Streamlit dahili line_chart ile tertemiz çizgi grafik
       chart_df = haftalik_ozet.set_index("Tarih")[["Kalori"]]
       st.line_chart(chart_df, color="#48cae4")
 
@@ -1181,7 +1217,7 @@ else:
         st.session_state.profil["hedef_kalori"] = round(tdee)
         st.session_state.profil["setup_tamamlandi"] = True
         st.success(
-            "Mevcut kilonuz ve hedef kilonuz aynı! Kilonuzu korumak için"
+            "Mevcut kilonuz dan hedef kilonuz aynı! Kilonuzu korumak için"
             " günlük kalori hedefiniz TDEE ile aynı ayarlandı."
         )
 
