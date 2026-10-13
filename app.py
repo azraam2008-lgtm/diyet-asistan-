@@ -1,7 +1,7 @@
+import datetime
 import hashlib
 import json
 import os
-import datetime
 import pandas as pd
 import streamlit as st
 
@@ -935,20 +935,3 @@ else:
           (st.session_state.profil["hedef_kalori"] * 0.30) / 9
       )
       verileri_kaydet(aktif_user)
-
-    st.markdown("---")
-    st.subheader("Mevcut Kayıtlı Hedef Özetiniz")
-    st.write(
-        f"Mevcut Kilo: **{st.session_state.profil['mevcut_kilo']} kg** |"
-        f" Hedef Kilo: **{st.session_state.profil['hedef_kilo']} kg**"
-    )
-    st.write(
-        "Günlük Kalori Hedefi:"
-        f" **{st.session_state.profil['hedef_kalori']} kcal**"
-    )
-    st.write(
-        "Önerilen Makro Dağılımı -> Protein:"
-        f" **{st.session_state.profil['hedef_protein']}g** | Karbonhidrat:"
-        f" **{st.session_state.profil['hedef_karb']}g** | Yağ:"
-        f" **{st.session_state.profil['hedef_yag']}g**"
-    )
