@@ -12,80 +12,30 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------
-# ESTETİK ÖZEL CSS (Lüks Serif Tipografi, Card & Swarovski Nova Teması)
+# GENEL STİLLER (Glassmorphism & Temel Tema)
 # ----------------------------------------------------
 st.markdown(
     """
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap');
 
-    /* Ana Arkaplan ve Metin Renkleri */
     .stApp {
         background-color: #0b132b;
         color: #e0e1dd;
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
-    /* Tüm Başlıklar için Lüks Serif Tipografi */
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Playfair Display', Georgia, serif !important;
         letter-spacing: 0.5px;
         color: #ffffff !important;
     }
 
-    /* Kuğu Logosu Stil Tanımlamaları */
-    .nova-logo-title {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        font-family: 'Playfair Display', Georgia, serif;
-        font-style: italic;
-        font-size: 42px;
-        font-weight: 700;
-        color: #ffffff;
-        margin-bottom: 10px;
-    }
-
-    .nova-logo-sidebar {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        font-family: 'Playfair Display', Georgia, serif;
-        font-style: italic;
-        font-size: 38px;
-        font-weight: 700;
-        color: #ffffff;
-        margin-top: 10px;
-        margin-bottom: 20px;
-    }
-
-    .swan-svg {
-        display: inline-block;
-        width: 38px;
-        height: 38px;
-        vertical-align: middle;
-    }
-
-    .swan-svg svg {
-        width: 100%;
-        height: 100%;
-        fill: none;
-        stroke: #ffffff;
-        stroke-width: 1.5;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
-    }
-
-    /* Sidebar (Yan Menü) Tasarımı */
     [data-testid="stSidebar"] {
         background-color: #1c2541;
         color: #e0e1dd;
     }
 
-    /* Tab'lar ve Form Başlıkları */
     .stTabs [data-baseweb="tab-list"] {
         gap: 12px;
     }
@@ -103,18 +53,12 @@ st.markdown(
         border-bottom: 2px solid #48cae4 !important;
     }
 
-    /* Lüks Metric Kartları */
     [data-testid="stMetric"] {
         background: linear-gradient(135deg, rgba(28, 37, 65, 0.9) 0%, rgba(11, 19, 43, 0.95) 100%);
         border: 1px solid rgba(72, 202, 228, 0.25);
         border-radius: 12px;
         padding: 16px 20px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        transition: all 0.3s ease;
-    }
-    [data-testid="stMetric"]:hover {
-        border-color: rgba(72, 202, 228, 0.6);
-        transform: translateY(-2px);
     }
     [data-testid="stMetricLabel"] {
         font-family: 'Playfair Display', Georgia, serif !important;
@@ -129,15 +73,6 @@ st.markdown(
         color: #ffffff !important;
     }
 
-    /* Estetik Tablo Özelleştirmeleri */
-    [data-testid="stDataFrame"] {
-        border: 1px solid rgba(58, 80, 107, 0.5);
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-    }
-
-    /* Özel Bilgi ve Makro Kartı */
     .nova-summary-card {
         background: linear-gradient(135deg, #1c2541 0%, #0b132b 100%);
         border: 1px solid #3a506b;
@@ -153,15 +88,7 @@ st.markdown(
         flex-wrap: wrap;
         gap: 12px;
     }
-    .nova-summary-card span {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-    .nova-summary-card strong {
-        color: #ffffff;
-        font-weight: 600;
-    }
 
-    /* Butonlar */
     .stButton > button {
         background-color: #3a506b;
         color: #ffffff;
@@ -177,16 +104,6 @@ st.markdown(
         border-color: #48cae4;
     }
 
-    /* Metin Girişleri ve Seçim Kutuları */
-    .stTextInput > div > div > input, .stSelectbox > div > div > div, .stNumberInput > div > div > input {
-        background-color: #1c2541;
-        color: #ffffff;
-        border-radius: 6px;
-        border: 1px solid #3a506b;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-
-    /* Sidebar İçi Ortalanmış Profil Kutusu */
     .sidebar-user-card {
         text-align: center;
         margin-top: 10px;
@@ -209,10 +126,10 @@ st.markdown(
 USERS_FILE = "kullanicilar.json"
 AMBLEM_PATH = "watermarked_img_10875607693201107735.jpg"
 
-# Kuğu SVG Kodu HTML
-SWAN_SVG_HTML = """
-<span class="swan-svg">
-    <svg viewBox="0 0 24 24">
+# "O" Harfi Yerine Geçecek Şeffaf Kuğu SVG Bileşeni
+SWAN_HTML = """
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; vertical-align: middle; margin: 0 -2px;">
+    <svg viewBox="0 0 24 24" style="width: 100%; height: 100%; fill: none; stroke: #ffffff; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4);">
         <path d="M19 15c0 1.657-1.343 3-3 3H8c-2.209 0-4-1.791-4-4 0-1.5 1-2.8 2.5-3.5C8.2 8.5 9 6.5 9 5c0-1.657 1.343-3 3-3s3 1.343 3 3v2.5c2.5 1 4 2.5 4 4.5.5 1.2.5 2.5 1 3z"/>
         <path d="M12 5c-.4 1-1.2 2-2 2.5"/>
     </svg>
@@ -462,9 +379,9 @@ if not st.session_state.giris_yapildi:
   st.markdown(
       f"""
       <div style="max-width: 740px; margin: 0 auto; padding: 0px 15px; margin-bottom: 5px;">
-          <div class="nova-logo-title">
+          <div style="display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 42px; font-weight: 700; color: #ffffff; margin-bottom: 10px;">
               <span>N</span>
-              {SWAN_SVG_HTML}
+              {SWAN_HTML}
               <span>V</span>
               <span>A</span>
           </div>
@@ -533,12 +450,12 @@ else:
   # ----------------------------------------------------
   aktif_user = st.session_state.aktif_kullanici
 
-  # Özel Kuğu Logolu Sol Menü N[Kuğu]VA Başlığı
+  # Sidebar N[Kuğu]VA Başlığı
   st.sidebar.markdown(
       f"""
-      <div class="nova-logo-sidebar">
+      <div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 38px; font-weight: 700; color: #ffffff; margin-top: 10px; margin-bottom: 20px;">
           <span>N</span>
-          {SWAN_SVG_HTML}
+          {SWAN_HTML}
           <span>V</span>
           <span>A</span>
       </div>
@@ -774,14 +691,12 @@ else:
 
     net_fark = toplam_alinan - toplam_harcanan
 
-    # Lüks Cam Efektli Metrik Kartlar
     c_m1, c_m2, c_m3, c_m4 = st.columns(4)
     c_m1.metric("Alınan Kalori", f"{toplam_alinan:.1f} kcal")
     c_m2.metric("Harcanan Kalori", f"{toplam_harcanan:.1f} kcal")
     c_m3.metric("Net Kalori Dengesi", f"{net_fark:+.1f} kcal")
     c_m4.metric("Su Tüketimi", f"{aktivite_guncel['su']} Liter")
 
-    # Alt Kısım Şık Makro ve Adım Özet Çubuğu
     st.markdown(
         f"""
         <div class="nova-summary-card">
